@@ -2,18 +2,20 @@
 
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
+#import <IOKit/graphics/IOGraphicsLib.h>
 
 #import "SRApplicationDelegate.h"
 
 #import "utils.h"
 #import "ResMenuItem.h"
+#import "RDM-Swift.h"
 
 
 void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
                                     CGDisplayChangeSummaryFlags change_flags,
                                     void *app_delegate)
 {
-    SRApplicationDelegate *appDelegate = (SRApplicationDelegate*)app_delegate;
+	SRApplicationDelegate *appDelegate = (__bridge SRApplicationDelegate*)app_delegate;
     [appDelegate refreshStatusMenu];
 }
 
@@ -38,8 +40,6 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 
 - (void) refreshStatusMenu
 {
-	if(statusMenu)
-		[statusMenu release];
 	
 	statusMenu = [[NSMenu alloc] initWithTitle: @""];
 	
@@ -81,10 +81,9 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 				if(mainModeNum == j)
 				{
 					mainItem = item;
-					[item setState: NSOnState];	
+					[item setState: NSControlStateValueOn];
 				}
 				[displayMenuItems addObject: item];
-				[item release];
 			}
 			int idealColorDepth = 32;
 			double idealRefreshRate = 0.0f;
@@ -132,26 +131,20 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 				}
 			}
 			
-			NSString* title;
-			{
-				if([mainItem scale] == 2.0f)
-				{
-					title = [NSString stringWithFormat: @"%d × %d ⚡️️", [mainItem width], [mainItem height]];
-				}
-				else
-				{
-					title = [NSString stringWithFormat: @"%d × %d", [mainItem width], [mainItem height]];
-				}
+			NSString *screenName = @"";
+			NSDictionary *deviceInfo = (__bridge NSDictionary *)IODisplayCreateInfoDictionary(CGDisplayIOServicePort(display), kIODisplayOnlyPreferredName);
+			NSDictionary *localizedNames = [deviceInfo objectForKey:[NSString stringWithUTF8String:kDisplayProductName]];
+			if ([localizedNames count] > 0) {
+				screenName = [localizedNames objectForKey:[[localizedNames allKeys] objectAtIndex:0]];
 			}
+			[submenu addItem:[[EditDisplayPlistItem alloc] initWithTitle:@"Edit" action:@selector(editResolutions:) vendorID:CGDisplayVendorNumber(display) productID:CGDisplayModelNumber(display) displayName:screenName]];
 			
+			NSString* title = [NSString stringWithFormat: @"%d × %d%@",
+							   [mainItem width], [mainItem height], ([mainItem scale] == 2.0f) ? @" ⚡️" : @""];
 			
 			NSMenuItem* resolution = [[NSMenuItem alloc] initWithTitle: title action: nil keyEquivalent: @""];
 			[resolution setSubmenu: submenu];
-			[submenu release];
 			[statusMenu addItem: resolution];
-			[resolution release];
-			
-			[displayMenuItems release];
 		}
 		
 		{
@@ -161,19 +154,15 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 		    {
 				ResMenuItem* item = [[ResMenuItem alloc] initWithDisplay: display andMode: &modes[j]];
 				[item setTextFormat: 2];
-				//[item autorelease];
-				if(mainModeNum == j)
-				{
+				if(mainModeNum == j) {
 					mainItem = item;
-					[item setState: NSOnState];	
+					[item setState: NSControlStateValueOn];
 				}
 				[displayMenuItems addObject: item];
-				[item release];
 			}
 			int idealColorDepth = 32;
 			double idealRefreshRate = 0.0f;
-			if(mainItem)
-			{
+			if(mainItem) {
 				idealColorDepth = [mainItem colorDepth];
 				idealRefreshRate = [mainItem refreshRate];
 			}
@@ -181,15 +170,11 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 			
 			
 			NSMenu* submenu = [[NSMenu alloc] initWithTitle: @""];
-			for(int j=0; j< [displayMenuItems count]; j++)
-			{
+			for(int j=0; j< [displayMenuItems count]; j++) {
 				ResMenuItem* item = [displayMenuItems objectAtIndex: j];
-				if([item colorDepth] == idealColorDepth)
-				{
+				if([item colorDepth] == idealColorDepth) {
 					if([mainItem width]==[item width] && [mainItem height]==[item height] && [mainItem scale]==[item scale])
-					{
 						[submenu addItem: item];
-					}
 				}
 			}
 			if(idealRefreshRate)
@@ -197,20 +182,11 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 				NSMenuItem* freq = [[NSMenuItem alloc] initWithTitle: [NSString stringWithFormat: @"%.0f Hz", [mainItem refreshRate]] action: nil keyEquivalent: @""];
 			
 				if([submenu numberOfItems] > 1)
-				{
 					[freq setSubmenu: submenu];
-				}
 				else
-				{
 					[freq setEnabled: NO];
-				}
 				[statusMenu addItem: freq];
-				[freq release];
 			}
-			[submenu release];
-			
-			[displayMenuItems release];
-			
 		}
 		
 		
@@ -226,6 +202,18 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 	[statusMenu addItemWithTitle: @"Quit" action: @selector(quit) keyEquivalent: @""];
 	[statusMenu setDelegate: self];
 	[statusItem setMenu: statusMenu];
+}
+
+
+
+- (void) editResolutions: (EditDisplayPlistItem *)sender {
+	NSStoryboard *storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
+	editResolutionsController = [storyBoard instantiateControllerWithIdentifier:@"edit"];
+	ViewController *vc = (ViewController*)editResolutionsController.window.contentViewController;
+	vc.vendorID = sender.vendorID;
+	vc.productID = sender.productID;
+	vc.displayProductName = sender.displayName;
+	[editResolutionsController showWindow:self];
 }
 
 
@@ -248,19 +236,19 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 - (void) applicationDidFinishLaunching: (NSNotification*) notification
 {
 //	NSLog(@"Finished launching");
-	statusItem = [[[NSStatusBar systemStatusBar] statusItemWithLength: NSSquareStatusItemLength] retain];
+	statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength: NSSquareStatusItemLength];
 	
 	NSImage* statusImage = [NSImage imageNamed: @"StatusIcon"];
-	[statusItem setImage: statusImage];
-	[statusItem setHighlightMode: YES];
+	statusItem.button.image = statusImage;
+	statusItem.button.cell.highlighted = YES;
 
   BOOL supportsDarkMenu = !(floor(NSAppKitVersionNumber) < 1343);  // NSAppKitVersionNumber10_10
   if (supportsDarkMenu) {
-    [[statusItem image] setTemplate:YES];
+    [statusItem.button.image setTemplate:YES];
   }
 
 	[self refreshStatusMenu];
-    CGDisplayRegisterReconfigurationCallback(DisplayReconfigurationCallback, self);
+    CGDisplayRegisterReconfigurationCallback(DisplayReconfigurationCallback, (void*)self);
 }
 
 @end

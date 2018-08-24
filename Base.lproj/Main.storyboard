@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14313.13.2" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.13.2"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -674,7 +675,7 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="RDM_2" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="RDM" customModuleProvider="target"/>
                 <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -704,7 +705,7 @@
         <!--View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="RDM_2" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="XfG-lQ-9wD" customClass="ViewController" customModule="RDM" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -739,27 +740,20 @@
                                                             <rect key="frame" x="1" y="1" width="116" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eD2-GW-jtE">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="116" height="17"/>
-                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" title="Table View Cell" id="HCa-6A-alk">
+                                                                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="VrY-5M-kPI">
+                                                                    <rect key="frame" x="10" y="-2" width="96" height="22"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="NFk-Jk-Myp">
+                                                                        <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" maximumFractionDigits="3" id="XC9-aF-9ir"/>
                                                                         <font key="font" metaFont="system"/>
                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                     </textFieldCell>
                                                                     <connections>
-                                                                        <binding destination="vbw-sH-Drm" name="value" keyPath="objectValue.width" id="WVT-J5-cDB">
-                                                                            <dictionary key="options">
-                                                                                <bool key="NSRaisesForNotApplicableKeys" value="NO"/>
-                                                                                <bool key="NSValidatesImmediately" value="YES"/>
-                                                                            </dictionary>
-                                                                        </binding>
+                                                                        <binding destination="vbw-sH-Drm" name="value" keyPath="objectValue.width" id="BJO-fn-DXb"/>
                                                                     </connections>
                                                                 </textField>
                                                             </subviews>
-                                                            <connections>
-                                                                <outlet property="textField" destination="eD2-GW-jtE" id="vtK-id-5iY"/>
-                                                            </connections>
                                                         </tableCellView>
                                                     </prototypeCellViews>
                                                 </tableColumn>
@@ -780,27 +774,20 @@
                                                             <rect key="frame" x="120" y="1" width="116" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DmB-Vi-9Cu">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="116" height="17"/>
-                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" title="Table View Cell" id="wxa-di-Fk9">
+                                                                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kZC-Wi-u5W">
+                                                                    <rect key="frame" x="10" y="-2" width="96" height="22"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="aCj-2O-thQ">
+                                                                        <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" maximumFractionDigits="3" id="RFe-cN-ipq"/>
                                                                         <font key="font" metaFont="system"/>
                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                     </textFieldCell>
                                                                     <connections>
-                                                                        <binding destination="2A2-AA-mQD" name="value" keyPath="objectValue.height" id="vQA-Vh-bAa">
-                                                                            <dictionary key="options">
-                                                                                <bool key="NSRaisesForNotApplicableKeys" value="NO"/>
-                                                                                <bool key="NSValidatesImmediately" value="YES"/>
-                                                                            </dictionary>
-                                                                        </binding>
+                                                                        <binding destination="2A2-AA-mQD" name="value" keyPath="objectValue.height" id="4zX-ke-Pj2"/>
                                                                     </connections>
                                                                 </textField>
                                                             </subviews>
-                                                            <connections>
-                                                                <outlet property="textField" destination="DmB-Vi-9Cu" id="NS5-lD-6Hk"/>
-                                                            </connections>
                                                         </tableCellView>
                                                     </prototypeCellViews>
                                                 </tableColumn>
@@ -820,27 +807,18 @@
                                                             <rect key="frame" x="239" y="1" width="197" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ry6-Df-lur">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="197" height="17"/>
-                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" title="Table View Cell" id="6eI-eD-arZ">
+                                                                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GII-ks-4Tf">
+                                                                    <rect key="frame" x="68" y="0.0" width="22" height="18"/>
+                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                                    <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="1iu-gk-KcF">
+                                                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                                         <font key="font" metaFont="system"/>
-                                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                                                    </textFieldCell>
+                                                                    </buttonCell>
                                                                     <connections>
-                                                                        <binding destination="kuj-SJ-Ffq" name="value" keyPath="objectValue.hiDPI" id="WTS-1S-v8G">
-                                                                            <dictionary key="options">
-                                                                                <bool key="NSRaisesForNotApplicableKeys" value="NO"/>
-                                                                                <bool key="NSValidatesImmediately" value="YES"/>
-                                                                            </dictionary>
-                                                                        </binding>
+                                                                        <binding destination="kuj-SJ-Ffq" name="value" keyPath="objectValue.hiDPI" id="EVr-WB-H1N"/>
                                                                     </connections>
-                                                                </textField>
+                                                                </button>
                                                             </subviews>
-                                                            <connections>
-                                                                <outlet property="textField" destination="Ry6-Df-lur" id="DC6-61-EdJ"/>
-                                                            </connections>
                                                         </tableCellView>
                                                     </prototypeCellViews>
                                                 </tableColumn>
@@ -874,9 +852,11 @@
                                     <action selector="save:" target="XfG-lQ-9wD" id="sKP-c5-eLt"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="83i-KI-4SF">
-                                <rect key="frame" x="20" y="19" width="21" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="83i-KI-4SF">
+                                <rect key="frame" x="21" y="20" width="21" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="21" id="jnq-zh-PQV"/>
+                                </constraints>
                                 <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="NSAddTemplate" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="frU-93-tG9">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -885,15 +865,18 @@
                                     <action selector="add:" target="XfG-lQ-9wD" id="NJ3-84-gwH"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JHu-Hi-3JO">
-                                <rect key="frame" x="49" y="19" width="21" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JHu-Hi-3JO">
+                                <rect key="frame" x="50" y="20" width="21" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="21" id="pdV-sD-fZJ"/>
+                                </constraints>
                                 <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="NSRemoveTemplate" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Y4c-sL-Ug4">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="remove:" target="XfG-lQ-9wD" id="ACv-mE-Wkq"/>
+                                    <action selector="remove:" target="XfG-lQ-9wD" id="9fp-K0-rGG"/>
+                                    <binding destination="eBc-Q9-cEK" name="enabled" keyPath="canRemove" id="Uiz-rr-xMP"/>
                                 </connections>
                             </button>
                             <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ayq-Wa-lly">
@@ -907,22 +890,37 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="keD-Ag-1yZ">
+                                <rect key="frame" x="129" y="23" width="223" height="17"/>
+                                <textFieldCell key="cell" lineBreakMode="clipping" title="Reboot is required to apply changes" id="77u-WF-Svg">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                         <constraints>
                             <constraint firstItem="ayq-Wa-lly" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20" id="1zP-Fs-iYx"/>
+                            <constraint firstItem="keD-Ag-1yZ" firstAttribute="centerX" secondItem="m2S-Jp-Qdl" secondAttribute="centerX" id="23L-j9-Bqi"/>
                             <constraint firstItem="bfS-iu-Jgu" firstAttribute="top" secondItem="YEp-6x-6rH" secondAttribute="bottom" constant="12" id="5pU-bC-zxl"/>
                             <constraint firstAttribute="trailing" secondItem="YEp-6x-6rH" secondAttribute="trailing" constant="20" id="FU4-7L-onT"/>
+                            <constraint firstItem="keD-Ag-1yZ" firstAttribute="firstBaseline" secondItem="bfS-iu-Jgu" secondAttribute="firstBaseline" id="GPu-ET-04c"/>
                             <constraint firstItem="bfS-iu-Jgu" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="Jre-sn-sEq"/>
                             <constraint firstItem="8db-ve-2Wq" firstAttribute="top" secondItem="ayq-Wa-lly" secondAttribute="bottom" constant="16" id="PwJ-EE-8ea"/>
+                            <constraint firstItem="83i-KI-4SF" firstAttribute="leading" secondItem="Zid-hf-sRF" secondAttribute="leading" id="WxC-0R-jcz"/>
                             <constraint firstItem="ayq-Wa-lly" firstAttribute="centerX" secondItem="m2S-Jp-Qdl" secondAttribute="centerX" id="YwK-fk-NKb"/>
+                            <constraint firstItem="83i-KI-4SF" firstAttribute="firstBaseline" secondItem="JHu-Hi-3JO" secondAttribute="firstBaseline" id="aC0-bA-esF"/>
+                            <constraint firstItem="JHu-Hi-3JO" firstAttribute="leading" secondItem="83i-KI-4SF" secondAttribute="trailing" constant="8" id="e3w-dG-3qO"/>
                             <constraint firstItem="YEp-6x-6rH" firstAttribute="centerX" secondItem="m2S-Jp-Qdl" secondAttribute="centerX" id="eRO-IO-oRH"/>
                             <constraint firstAttribute="bottom" secondItem="bfS-iu-Jgu" secondAttribute="bottom" constant="20" id="fr4-9v-5yY"/>
+                            <constraint firstItem="keD-Ag-1yZ" firstAttribute="firstBaseline" secondItem="JHu-Hi-3JO" secondAttribute="firstBaseline" id="nhU-aE-QOz"/>
                             <constraint firstAttribute="trailing" secondItem="bfS-iu-Jgu" secondAttribute="trailing" constant="20" id="oO3-aZ-Xcf"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="arrayController" destination="eBc-Q9-cEK" id="osD-1c-isA"/>
                         <outlet property="displayName" destination="ayq-Wa-lly" id="TAE-gr-nZm"/>
+                        <outlet property="removeButton" destination="JHu-Hi-3JO" id="pAj-cM-KBb"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

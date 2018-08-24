@@ -53,6 +53,30 @@ import Cocoa
 	
 	override func viewWillAppear() {
 		super.viewWillAppear()
+
+		let p = Process()
+		let pipe = Pipe()
+		p.launchPath = "/bin/bash"
+		p.arguments = ["-c", "csrutil status"]
+		p.standardOutput = pipe
+		p.launch()
+		let data = pipe.fileHandleForReading.readDataToEndOfFile()
+		
+		let enabled = p.terminationStatus == 0 &&
+			String(data: data, encoding: String.Encoding.utf8)!.split(separator: "\n")
+				.allSatisfy({ (s : Substring) -> Bool in
+			let line = s.trimmingCharacters(in: CharacterSet.whitespaces)
+			return line != "System Integrity Protection status: disabled." && line != "Filesystem Protections: disabled"
+		})
+		
+		if enabled {
+			let alert = NSAlert()
+			alert.messageText = "Disable System Integrity Protection to edit resolutions"
+			alert.alertStyle = .informational
+			alert.beginSheetModal(for: view.window!) { (_ : NSApplication.ModalResponse) in
+				self.view.window!.close()
+			}
+		}
 		
 		plist = NSMutableDictionary.init(contentsOf: URL.init(fileURLWithPath: fileName)) ?? NSMutableDictionary()
 		
@@ -100,6 +124,8 @@ import Cocoa
 		arrayController.rearrangeObjects()
 	}
 	
+	@IBOutlet weak var removeButton: NSButton!
+	
 	@IBAction func remove(_ sender: Any) {
 		if arrayController.selectionIndex >= 0 {
 			resolutions.remove(at: arrayController.selectionIndex)
@@ -114,8 +140,8 @@ import Cocoa
 			d.append(UnsafeBufferPointer(start: &r.width, count: 1))
 			d.append(UnsafeBufferPointer(start: &r.height, count: 1))
 			if r.hiDPI {
-				var hiDPIFlag = [0x1, 0x200000]
-				d.append(UnsafeBufferPointer(start: &hiDPIFlag, count: 1))
+				var hiDPIFlag : [UInt32] = [0x1, 0x200000]
+				d.append(UnsafeBufferPointer(start: &hiDPIFlag, count: 2))
 			}
 			return swapUInt32Data(data: d) as NSData
 		} as NSArray

@@ -137,7 +137,10 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 			if ([localizedNames count] > 0) {
 				screenName = [localizedNames objectForKey:[[localizedNames allKeys] objectAtIndex:0]];
 			}
-			[submenu addItem:[[EditDisplayPlistItem alloc] initWithTitle:@"Edit" action:@selector(editResolutions:) vendorID:CGDisplayVendorNumber(display) productID:CGDisplayModelNumber(display) displayName:screenName]];
+			
+			[submenu addItem:[NSMenuItem separatorItem]];
+			
+			[submenu addItem:[[EditDisplayPlistItem alloc] initWithTitle:@"Edit..." action:@selector(editResolutions:) vendorID:CGDisplayVendorNumber(display) productID:CGDisplayModelNumber(display) displayName:screenName]];
 			
 			NSString* title = [NSString stringWithFormat: @"%d × %d%@",
 							   [mainItem width], [mainItem height], ([mainItem scale] == 2.0f) ? @" ⚡️" : @""];
@@ -214,6 +217,8 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 	vc.productID = sender.productID;
 	vc.displayProductName = sender.displayName;
 	[editResolutionsController showWindow:self];
+	[editResolutionsController.window makeKeyAndOrderFront:self];
+	[[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
 }
 
 

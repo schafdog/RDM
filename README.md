@@ -12,4 +12,6 @@ This way RDM will run automatically on startup.
 
 This version has integrated generator/editor of display override plist (see https://comsysto.github.io/Display-Override-PropertyList-File-Parser-and-Generator-with-HiDPI-Support-For-Scaled-Resolutions/), which allows to add custom scaled resolutions. System Integrity Protection should be disabled to edit the resolution list. To get a HiDPI resolution, you should specify 2x more pixels height and width and check HiDPI checkbox.
 
-This is a fork of https://github.com/avibrazil/RDM. macOS 10.10 or higher is required, for older systems use the original version.
+This is a fork of https://github.com/avibrazil/RDM. 
+
+Requires macOS 10.10 or higher for running, Xcode 10 for building. For older systems use the original version.

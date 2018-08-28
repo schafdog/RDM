@@ -10,12 +10,6 @@ is HiDPI or 2× or more dense in pixels.
 For more practical results, add RDM.app to your Login Items in **System Preferences ➡ Users & Groups ➡ Login Items**.
 This way RDM will run automatically on startup.
 
-This software was studied and released [here](http://garethjenkins.com/2012/07/01/investigating-a-high-resolution-retina-utility-for-macbook-pro-1x-and-2x-modes/#comment-623)
-and [here](http://www.reddit.com/r/apple/comments/vi9yf/set_your_retina_macbook_pros_resolution_to/)
-by its original authors. I just improved the build system and Makefile, fixed the icon,
-added support for easy installable package (PKG, DMG) and improved the way menu is
-displayed. I don't know what is the license by its authors because it came 100%
-uncommented and undocumented. But I'm sure they would enjoy you to freely use it. Me too.
+This version has integrated generator/editor of display override plist (see https://comsysto.github.io/Display-Override-PropertyList-File-Parser-and-Generator-with-HiDPI-Support-For-Scaled-Resolutions/), which allows to add custom scaled resolutions. System Integrity Protection should be disabled to edit the resolution list. To get a HiDPI resolution, you should specify 2x more pixels height and width and check HiDPI checkbox.
 
-Want installable binary package? [It is here](http://avi.alkalay.net/software/RDM/).
-
+This is a fork of https://github.com/avibrazil/RDM. macOS 10.10 or higher is required, for older systems use the original version.

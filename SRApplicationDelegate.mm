@@ -11,6 +11,9 @@
 #import "RDM-Swift.h"
 
 
+#define MAX_DISPLAYS 0x10
+
+
 void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
                                     CGDisplayChangeSummaryFlags change_flags,
                                     void *app_delegate)
@@ -44,8 +47,8 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 	statusMenu = [[NSMenu alloc] initWithTitle: @""];
 	
 	uint32_t nDisplays;
-	CGDirectDisplayID displays[0x10];
-	CGGetOnlineDisplayList(0x10, displays, &nDisplays);
+	CGDirectDisplayID displays[MAX_DISPLAYS];
+	CGGetOnlineDisplayList(MAX_DISPLAYS, displays, &nDisplays);
 	
 	for(int i=0; i<nDisplays; i++)
 	{
@@ -199,6 +202,13 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 		[statusMenu addItem: [NSMenuItem separatorItem]];
 	}
 	
+	if (nDisplays > 1) {
+		NSMenuItem * mirroring = [[NSMenuItem alloc] initWithTitle:@"Display mirroring" action:@selector(toggleMirroring:) keyEquivalent: @""];
+		mirroring.state = CGDisplayIsInMirrorSet(CGMainDisplayID());
+		[statusMenu addItem:mirroring];
+		[statusMenu addItem: [NSMenuItem separatorItem]];
+	}
+	
 	[statusMenu addItemWithTitle: @"About RDM" action: @selector(showAbout) keyEquivalent: @""];
 	
 	
@@ -219,6 +229,26 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 	[editResolutionsController showWindow:self];
 	[editResolutionsController.window makeKeyAndOrderFront:self];
 	[[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+}
+
+
+
+CGError multiConfigureDisplays(CGDisplayConfigRef configRef, CGDirectDisplayID *displays, int count, CGDirectDisplayID master) {
+	CGError error = kCGErrorSuccess;
+	for (int i = 0; i < count; i++)
+		if (displays[i] != master)
+			error = error ? error : CGConfigureDisplayMirrorOfDisplay(configRef, displays[i], master);
+	return error;
+}
+
+- (void) toggleMirroring: (NSMenuItem *)sender {
+	CGDisplayCount numberOfOnlineDspys;
+	CGDirectDisplayID displays[MAX_DISPLAYS];
+	CGGetOnlineDisplayList(MAX_DISPLAYS, displays, &numberOfOnlineDspys);
+	CGDisplayConfigRef configRef;
+	CGBeginDisplayConfiguration (&configRef);
+	multiConfigureDisplays(configRef, displays, numberOfOnlineDspys, sender.state ? kCGNullDirectDisplay : CGMainDisplayID());
+	CGCompleteDisplayConfiguration (configRef,kCGConfigurePermanently);
 }
 
 

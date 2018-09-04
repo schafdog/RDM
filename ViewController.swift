@@ -137,8 +137,9 @@ import Cocoa
 	@IBAction func save(_ sender: Any) {
 		let resArray = resolutions.map { (r : Resolution) -> NSData in
 			var d = Data()
-			d.append(UnsafeBufferPointer(start: &r.width, count: 1))
-			d.append(UnsafeBufferPointer(start: &r.height, count: 1))
+			var w : UInt32 = r.width, h : UInt32 = r.height
+			d.append(UnsafeBufferPointer(start: &w, count: 1))
+			d.append(UnsafeBufferPointer(start: &h, count: 1))
 			if r.hiDPI {
 				var hiDPIFlag : [UInt32] = [0x1, 0x200000]
 				d.append(UnsafeBufferPointer(start: &hiDPIFlag, count: 2))

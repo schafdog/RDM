@@ -61,13 +61,12 @@ import Cocoa
 		p.standardOutput = pipe
 		p.launch()
 		let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        
+        let disabledProtections = ["System Integrity Protection status: disabled.", "Filesystem Protections: disabled"]
 		
 		let enabled = p.terminationStatus == 0 &&
 			String(data: data, encoding: String.Encoding.utf8)!.split(separator: "\n")
-				.allSatisfy({ (s : Substring) -> Bool in
-			let line = s.trimmingCharacters(in: CharacterSet.whitespaces)
-			return line != "System Integrity Protection status: disabled." && line != "Filesystem Protections: disabled"
-		})
+				.allSatisfy({ return !disabledProtections.contains($0.trimmingCharacters(in: CharacterSet.whitespaces))	})
 		
 		if enabled {
 			let alert = NSAlert()
@@ -77,7 +76,7 @@ import Cocoa
 				self.view.window!.close()
 			}
 		}
-		
+        
 		plist = NSMutableDictionary.init(contentsOf: URL.init(fileURLWithPath: fileName)) ?? NSMutableDictionary()
 		
 		resolutions = [Resolution]()
@@ -153,8 +152,13 @@ import Cocoa
 		plist.setValue(resArray, forKey: "scale-resolutions")
 		let tmpFile = NSTemporaryDirectory() + "tmp"
 		plist.write(toFile: tmpFile, atomically: false)
+        
+        var mountSystemReadWrite = ""
+        if ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 15, patchVersion: 0)) {
+            mountSystemReadWrite = "mount -uw / && "
+        }
 
-		let myAppleScript = "do shell script \"mkdir -p \(dir) && cp \(tmpFile) \(fileName)\" with administrator privileges"
+		let myAppleScript = "do shell script \"\(mountSystemReadWrite)mkdir -p \(dir) && cp \(tmpFile) \(fileName)\" with administrator privileges"
 		
 		var error: NSDictionary?
 		if let scriptObject = NSAppleScript(source: myAppleScript) {

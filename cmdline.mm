@@ -31,7 +31,7 @@ int cmdline_main(int argc, char * const*argv)
 		int height = 0;
 		CGFloat scale = 0.0f;
 		int bitRes = 0;
-		int displayNo = -1;
+		int displayNo = 0;
 		double rotation = -1;
 		
 		bool listDisplays = 0;
@@ -83,35 +83,25 @@ int cmdline_main(int argc, char * const*argv)
 
 		uint32_t nDisplays;
 		CGDirectDisplayID displays[0x10];
-		CGGetOnlineDisplayList(0x10, displays, &nDisplays);
-		
-		//displays[0] = CGMainDisplayID();
-		
-		
 		CGDirectDisplayID display;
+
+		CGGetOnlineDisplayList(0x10, displays, &nDisplays);
 	    
-		if(displayNo > 0)
+		if(displayNo > nDisplays -1)
 		{
-			if(displayNo > nDisplays -1)
-			{
-				fprintf(stderr, "Error: display index %d exceeds display count %d\n", displayNo, nDisplays);
-				exit(1);
-			}
-			display = displays[displayNo];
+			fprintf(stderr, "Error: display index %d exceeds display count %d\n", displayNo, nDisplays);
+			exit(1);
 		}
-		else
-		{
-		    display = CGMainDisplayID();
-		}
+		display = displays[displayNo];
 		
 		if(listDisplays)
 		{
 			for(int i=0; i<nDisplays; i++)
 			{
 				int modeNum;
-				CGSGetCurrentDisplayMode(display, &modeNum);
+				CGSGetCurrentDisplayMode(displays[i], &modeNum);
 				modes_D4 mode;
-				CGSGetDisplayModeDescriptionOfLength(display, modeNum, &mode, 0xD4);
+				CGSGetDisplayModeDescriptionOfLength(displays[i], modeNum, &mode, 0xD4);
 				
 				int mBitres = (mode.derived.depth == 4) ? 32 : 16;
 				
@@ -121,6 +111,7 @@ int cmdline_main(int argc, char * const*argv)
 			
 			return 0;
 		}
+
 		if(listModes)
 		{
 			int nModes;

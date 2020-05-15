@@ -9,22 +9,10 @@
 
 int main(int argc, char* argv[])
 {
-	int ret = -1;
 	if(argc > 1)
 	{
+		int ret;
 		ret = cmdline_main(argc, argv);
-	
-		if(ret == -1)
-		{
-			fprintf(stderr, "Commandline options\n"
-						"  --width    (-w)  Width\n"
-						"  --height   (-h)  Height\n"
-						"  --scale    (-s)  Scale (2.0 = Retina, default=current)\n"
-						"  --bits     (-b)  Color depth (default=current)\n"
-						"  --display  (-d)  Select display # (default=main)\n"
-						"  --displays (-l) List available displays\n"
-				                "  --modes    (-m) List available modes\n");
-		}
 		exit(ret);
 	}
 

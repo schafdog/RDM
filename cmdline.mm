@@ -10,6 +10,18 @@ extern "C"
 
 #import "utils.h"
 
+void usage()
+{
+	fprintf(stderr, "Commandline options\n"
+					"  --width    (-w)  Width\n"
+					"  --height   (-h)  Height\n"
+					"  --scale    (-s)  Scale (2.0 = Retina, default=current)\n"
+					"  --bits     (-b)  Color depth (default=current)\n"
+					"  --display  (-d)  Select display # (default=main)\n"
+					"  --displays (-l) List available displays\n"
+			                "  --modes    (-m) List available modes\n");
+}
+
 int cmdline_main(int argc, char * const*argv)
 {
 	//exit(0);
@@ -64,6 +76,7 @@ int cmdline_main(int argc, char * const*argv)
 				rotation = atof(optarg);
 				break;
 			default:
+				usage();
 				return -1;
 			}
 		}

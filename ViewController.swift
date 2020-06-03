@@ -61,8 +61,12 @@ import Cocoa
 		p.standardOutput = pipe
 		p.launch()
 		let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        
-        let disabledProtections = ["System Integrity Protection status: disabled.", "Filesystem Protections: disabled"]
+
+		let disabledProtections = [
+			"System Integrity Protection status: disabled.",
+			"System Integrity Protection status: disabled (Apple Internal).",
+			"Filesystem Protections: disabled"
+		]
 		
 		let enabled = p.terminationStatus == 0 &&
 			String(data: data, encoding: String.Encoding.utf8)!.split(separator: "\n")
@@ -137,11 +141,17 @@ import Cocoa
 		let resArray = resolutions.map { (r : Resolution) -> NSData in
 			var d = Data()
 			var w : UInt32 = r.width, h : UInt32 = r.height
-			d.append(UnsafeBufferPointer(start: &w, count: 1))
-			d.append(UnsafeBufferPointer(start: &h, count: 1))
+			withUnsafeBytes(of: &w) { (p : UnsafeRawBufferPointer) in
+				d.append(contentsOf: p)
+			}
+			withUnsafeBytes(of: &h) { (p : UnsafeRawBufferPointer) in
+				d.append(contentsOf: p)
+			}
 			if r.hiDPI {
 				var hiDPIFlag : [UInt32] = [0x1, 0x200000]
-				d.append(UnsafeBufferPointer(start: &hiDPIFlag, count: 2))
+				withUnsafeBytes(of: &hiDPIFlag) { (p : UnsafeRawBufferPointer) in
+					d.append(contentsOf: p)
+				}
 			}
 			return swapUInt32Data(data: d) as NSData
 		} as NSArray
@@ -152,11 +162,11 @@ import Cocoa
 		plist.setValue(resArray, forKey: "scale-resolutions")
 		let tmpFile = NSTemporaryDirectory() + "tmp"
 		plist.write(toFile: tmpFile, atomically: false)
-        
-        var mountSystemReadWrite = ""
-        if ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 15, patchVersion: 0)) {
-            mountSystemReadWrite = "mount -uw / && "
-        }
+
+		var mountSystemReadWrite = ""
+		if ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 15, patchVersion: 0)) {
+			mountSystemReadWrite = "mount -uw / && "
+		}
 
 		let myAppleScript = "do shell script \"\(mountSystemReadWrite)mkdir -p \(dir) && cp \(tmpFile) \(fileName)\" with administrator privileges"
 		

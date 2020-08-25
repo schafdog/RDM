@@ -8,22 +8,24 @@
 
 import Cocoa
 
-@objc class Resolution : NSObject {
-	@objc var width : UInt32
-	@objc var height : UInt32
-	@objc var hiDPI : Bool
-	
-	init(width : UInt32, height : UInt32, hiDPI : Bool) {
-		self.width = width
-		self.height = height
-		self.hiDPI = hiDPI
-		super.init()
-	}
-}
-
 @objc class ViewController: NSViewController {
-	@IBOutlet var arrayController: NSArrayController!
-	@IBOutlet weak var displayName: NSTextField!
+
+//	 Assume SIP status and OS version are constants
+	static let rootWriteable = !isSIPActive()
+	static let afterCatalina = ProcessInfo().isOperatingSystemAtLeast(
+		OperatingSystemVersion(majorVersion: 10, minorVersion: 15, patchVersion: 0))
+	static let dirformat	 = ( ViewController.afterCatalina
+		?  "" : "/System" ) + "/Library/Displays/Contents/Resources/Overrides/DisplayVendorID-%x"
+
+	@IBOutlet var arrayController : NSArrayController!
+			  var plist	   = NSMutableDictionary()
+			  var sysplist = NSMutableDictionary()
+
+	@IBOutlet weak var displayName : NSTextField!
+	@objc 		   var vendorID    : UInt32		  = 0
+	@objc 		   var productID   : UInt32		  = 0
+				   var resolutions : [Resolution] = []
+				   var sysResols   : [Resolution] = []
 	
 	@objc var displayProductName : String {
 		get {
@@ -33,76 +35,52 @@ import Cocoa
 			displayName.stringValue = value
 		}
 	}
+
+	var dir : String {
+		get {
+//			return String(format:ViewController.dirformat, 40557) // DEBUG
+			return String(format:ViewController.dirformat, vendorID)
+		}
+	}
 	
 	var fileName : String {
 		get {
+//			return String(format: "\(dir)/DisplayProductID-%x", 23313) // DEBUG
 			return String(format:"\(dir)/DisplayProductID-%x", productID)
 		}
 	}
 	
-	var dir : String {
-		get {
-			return String(format:"/System/Library/Displays/Contents/Resources/Overrides/DisplayVendorID-%x", vendorID)
-		}
-	}
-
-	var plist = NSMutableDictionary()
-	var resolutions : [Resolution] = []
-	@objc var vendorID : UInt32 = 0
-	@objc var productID : UInt32 = 0
-	
 	override func viewWillAppear() {
 		super.viewWillAppear()
 
-		let p = Process()
-		let pipe = Pipe()
-		p.launchPath = "/bin/bash"
-		p.arguments = ["-c", "csrutil status"]
-		p.standardOutput = pipe
-		p.launch()
-		let data = pipe.fileHandleForReading.readDataToEndOfFile()
-
-		let disabledProtections = [
-			"System Integrity Protection status: disabled.",
-			"System Integrity Protection status: disabled (Apple Internal).",
-			"Filesystem Protections: disabled"
-		]
-		
-		let enabled = p.terminationStatus == 0 &&
-			String(data: data, encoding: String.Encoding.utf8)!.split(separator: "\n")
-				.allSatisfy({ return !disabledProtections.contains($0.trimmingCharacters(in: CharacterSet.whitespaces))	})
-		
-		if enabled {
-			let alert = NSAlert()
-			alert.messageText = "Disable System Integrity Protection to edit resolutions"
-			alert.alertStyle = .informational
-			alert.beginSheetModal(for: view.window!) { (_ : NSApplication.ModalResponse) in
-				self.view.window!.close()
-			}
-		}
-        
 		plist = NSMutableDictionary.init(contentsOf: URL.init(fileURLWithPath: fileName)) ?? NSMutableDictionary()
-		
-		resolutions = [Resolution]()
-		
-		if let a = plist["scale-resolutions"] {
-			if let b = a as? NSArray {
-				let c = b as Array
-				resolutions = c.map { (data : AnyObject) -> Resolution in
-					if let d = data as? NSData {
-						let e = swapUInt32Data(data: d as Data)
-						let count = e.count / MemoryLayout<UInt32>.size
-						var array = [UInt32](repeating: 0, count: count)
-						(e as NSData).getBytes(&array, length: count * MemoryLayout<UInt32>.size)
-						return Resolution(width: array[0], height: array[1], hiDPI: array.count >= 4 && array[2] != 0 && array[3] != 0)
-					}
-					return Resolution(width: 0, height: 0, hiDPI: false)
-				}
-			}
-		}
-		
+
 		if let a = plist[kDisplayProductName] as? String {
 			displayProductName = a
+		}
+		
+		resolutions = [Resolution]()
+		if let a = plist["scale-resolutions"] {
+			if let b = a as? NSArray {
+				resolutions = (b as Array).map { Resolution.parse(nsdata: $0 as? NSData) }
+			}
+		}
+
+//		For backward-compatibility
+		if FileManager.default.fileExists(atPath: "/System" + fileName) {
+			if ViewController.rootWriteable && ViewController.afterCatalina {
+				sysplist = NSMutableDictionary.init(contentsOf: URL.init(fileURLWithPath: "/System" + fileName)) ?? NSMutableDictionary()
+				if let a = sysplist["scale-resolutions"] {
+					if let b = a as? NSArray {
+						sysResols = (b as Array).map { Resolution.parse(nsdata: $0 as? NSData) }
+						for res in sysResols {
+							if !(resolutions.contains { $0 == res }) {
+								resolutions.append(res)
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		DispatchQueue.main.async {
@@ -110,19 +88,8 @@ import Cocoa
 		}
 	}
 	
-	func swapUInt32Data(data : Data) -> Data {
-		var mdata = data // make a mutable copy
-		let count = data.count / MemoryLayout<UInt32>.size
-		mdata.withUnsafeMutableBytes { (i32ptr: UnsafeMutablePointer<UInt32>) in
-			for i in 0..<count {
-				i32ptr[i] = i32ptr[i].byteSwapped
-			}
-		}
-		return mdata
-	}
-	
 	@IBAction func add(_ sender: Any) {
-		resolutions.append(Resolution(width: 0, height: 0, hiDPI: false))
+		resolutions.append(Resolution())
 		arrayController.content = resolutions
 		arrayController.rearrangeObjects()
 	}
@@ -131,54 +98,38 @@ import Cocoa
 	
 	@IBAction func remove(_ sender: Any) {
 		if arrayController.selectionIndex >= 0 {
-			resolutions.remove(at: arrayController.selectionIndex)
+			let removed = resolutions.remove(at: arrayController.selectionIndex)
+			if let idx = sysResols.firstIndex(where: { $0 == removed }) {
+				sysResols.remove(at: idx) // For backward compatibility
+			}
 			arrayController.content = resolutions
 			arrayController.rearrangeObjects()
 		}
 	}
-	
+
 	@IBAction func save(_ sender: Any) {
-		let resArray = resolutions.map { (r : Resolution) -> NSData in
-			var d = Data()
-			var w : UInt32 = r.width, h : UInt32 = r.height
-			withUnsafeBytes(of: &w) { (p : UnsafeRawBufferPointer) in
-				d.append(contentsOf: p)
-			}
-			withUnsafeBytes(of: &h) { (p : UnsafeRawBufferPointer) in
-				d.append(contentsOf: p)
-			}
-			if r.hiDPI {
-				var hiDPIFlag : [UInt32] = [0x1, 0x200000]
-				withUnsafeBytes(of: &hiDPIFlag) { (p : UnsafeRawBufferPointer) in
-					d.append(contentsOf: p)
-				}
-			}
-			return swapUInt32Data(data: d) as NSData
-		} as NSArray
-		
-		plist.setValue(NSNumber.init(value: vendorID), forKey: kDisplayVendorID)
-		plist.setValue(NSNumber.init(value: productID), forKey: kDisplayProductID)
+		let tmpFile	   = NSTemporaryDirectory() + "tmp",
+			tmpFileSys = NSTemporaryDirectory() + "tmp_sys"
+
 		plist.setValue(displayProductName as NSString, forKey: kDisplayProductName)
-		plist.setValue(resArray, forKey: "scale-resolutions")
-		let tmpFile = NSTemporaryDirectory() + "tmp"
+		plist.setValue(resolutions.map { $0.toData() } as NSArray, forKey: "scale-resolutions")
+
 		plist.write(toFile: tmpFile, atomically: false)
+		var saveScript = "mkdir -p '\(dir)' && cp '\(tmpFile)' '\(fileName)'"
 
-		var mountSystemReadWrite = ""
-		if ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 15, patchVersion: 0)) {
-			mountSystemReadWrite = "mount -uw / && "
+//		For backward compatibility
+		if ViewController.rootWriteable && ViewController.afterCatalina {
+			sysplist.setValue(displayProductName as NSString, forKey: kDisplayProductName)
+			sysplist.setValue(sysResols.map { $0.toData() } as NSArray, forKey: "scale-resolutions")
+
+			sysplist.write(toFile: tmpFileSys, atomically: false)
+			saveScript += " && mkdir -p '\("/System" + dir)' && cp '\(tmpFileSys)' '\("/System" + fileName)'"
 		}
 
-		let myAppleScript = "do shell script \"\(mountSystemReadWrite)mkdir -p \(dir) && cp \(tmpFile) \(fileName)\" with administrator privileges"
-		
-		var error: NSDictionary?
-		if let scriptObject = NSAppleScript(source: myAppleScript) {
-			scriptObject.executeAndReturnError(
-				&error)
-			if let e = error {
-				print("error: \(e)")
-			}
-		}
+		execAppleScript("do shell script \"" + saveScript + "\"", withAdminPriv: true)
+
 		try? FileManager.default.removeItem(atPath: tmpFile)
+		try? FileManager.default.removeItem(atPath: tmpFileSys)
 		view.window!.close()
 	}
 	
@@ -187,7 +138,4 @@ import Cocoa
 		// Update the view, if already loaded.
 		}
 	}
-
-
 }
-

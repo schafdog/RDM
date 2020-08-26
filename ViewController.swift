@@ -38,14 +38,12 @@ import Cocoa
 
 	var dir : String {
 		get {
-//			return String(format:ViewController.dirformat, 40557) // DEBUG
 			return String(format:ViewController.dirformat, vendorID)
 		}
 	}
 	
 	var fileName : String {
 		get {
-//			return String(format: "\(dir)/DisplayProductID-%x", 23313) // DEBUG
 			return String(format:"\(dir)/DisplayProductID-%x", productID)
 		}
 	}

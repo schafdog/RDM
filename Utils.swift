@@ -9,7 +9,6 @@
 import Foundation
 
 func isSIPActive() -> Bool {
-//	return false // DEBUG
 	let p = Process()
 	let pipe = Pipe()
 	p.launchPath = "/bin/bash"

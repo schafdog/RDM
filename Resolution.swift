@@ -14,13 +14,13 @@ import Foundation
 	@objc var hiDPI		: Bool
 		  var hiDPIFlag : [UInt32]
 
-	static let defaultHDPIFlag : [UInt32] = [0x1, 0x200000]
+	static let defaultHiDPIFlag : [UInt32] = [0x1, 0x200000]
 
 	init(width : UInt32 = 0, height : UInt32 = 0, hiDPI : Bool = false, origin : [UInt32] = []) {
 		self.width	   = width
 		self.height	   = height
 		self.hiDPI	   = hiDPI
-		self.hiDPIFlag = hiDPI && (origin.count > 2) ? Array(origin[2...]) : Resolution.defaultHDPIFlag // For hiDPI toggle feature
+		self.hiDPIFlag = hiDPI && (origin.count > 2) ? Array(origin[2...]) : Resolution.defaultHiDPIFlag // For hiDPI toggle feature
 
 		super.init()
 	}

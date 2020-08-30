@@ -18,4 +18,5 @@ Code for toggling display mirroring is taken from https://github.com/fcanas/mirr
 
 Requires macOS 10.10 or higher for running, Xcode 10 for building. For older systems use the original version.
 To install this application, simply run `./install` in the project root directory. If you want to specify the installation path, set `$RDM_PATH` variable. The default installation path is `/Applications`.
+
 Tested in macOS 10.15.6 with Xcode 11.4.

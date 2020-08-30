@@ -86,14 +86,14 @@ int cmdline_main(int argc, char * const*argv)
 		CGDirectDisplayID display;
 
 		CGGetOnlineDisplayList(0x10, displays, &nDisplays);
-	    
+
 		if(displayNo > nDisplays -1)
 		{
 			fprintf(stderr, "Error: display index %d exceeds display count %d\n", displayNo, nDisplays);
 			exit(1);
 		}
 		display = displays[displayNo];
-		
+
 		if(listDisplays)
 		{
 			for(int i=0; i<nDisplays; i++)

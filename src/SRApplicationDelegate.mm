@@ -45,11 +45,11 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 {
 	
 	statusMenu = [[NSMenu alloc] initWithTitle: @""];
-	
+
 	uint32_t nDisplays;
 	CGDirectDisplayID displays[MAX_DISPLAYS];
 	CGGetOnlineDisplayList(MAX_DISPLAYS, displays, &nDisplays);
-	
+
 	for(int i=0; i<nDisplays; i++)
 	{
 		CGDirectDisplayID display = displays[i];
@@ -143,9 +143,9 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 			}
 			
 			[submenu addItem:[NSMenuItem separatorItem]];
-			
+
 			[submenu addItem:[[EditDisplayPlistItem alloc] initWithTitle:@"Edit..." action:@selector(editResolutions:) vendorID:CGDisplayVendorNumber(display) productID:CGDisplayModelNumber(display) displayName:screenName]];
-			
+
 			NSString* title = [NSString stringWithFormat: @"%d × %d%@",
 							   [mainItem width], [mainItem height], ([mainItem scale] == 2.0f) ? @" ⚡️" : @""];
 			

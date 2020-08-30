@@ -63,25 +63,10 @@
 		350B4EE41FB05B2E0001A095 = {
 			isa = PBXGroup;
 			children = (
-				8FC72A1A24F664BA004E10E1 /* CharEncDec.swift */,
-				8FC72A1924F664BA004E10E1 /* Resolution.swift */,
-				8FC72A1B24F664BA004E10E1 /* Utils.swift */,
-				358D5656212DEDEC00F9E9BF /* cmdline.h */,
-				358D5654212DEDEC00F9E9BF /* cmdline.mm */,
-				358D5655212DEDEC00F9E9BF /* main.mm */,
 				358D5659212DEDEC00F9E9BF /* README.md */,
-				358D5657212DEDEC00F9E9BF /* ResMenuItem.h */,
-				358D565B212DEDED00F9E9BF /* ResMenuItem.mm */,
-				358D565A212DEDED00F9E9BF /* SRApplicationDelegate.h */,
-				358D5653212DEDEC00F9E9BF /* SRApplicationDelegate.mm */,
-				358D5652212DEDEB00F9E9BF /* utils.h */,
-				358D5658212DEDEC00F9E9BF /* utils.mm */,
-				35C9D3AF212C04DA00D652F7 /* ViewController.swift */,
+				8FA84DA824FB27200079E5A9 /* etc */,
+				8FA84DA724FB26AA0079E5A9 /* src */,
 				35C9D3B1212C04DD00D652F7 /* Assets.xcassets */,
-				35C9D3B3212C04DD00D652F7 /* Main.storyboard */,
-				35C9D3B6212C04DD00D652F7 /* Info.plist */,
-				35CC4996212C54AF00704BD7 /* bridging.h */,
-				35554436212C7CB00063AEE7 /* EditDisplayPlistItem.swift */,
 				350B4EEE1FB05B2E0001A095 /* Products */,
 				35E3DC1521281E3E00B4D66A /* Frameworks */,
 			);
@@ -102,6 +87,37 @@
 				35E3DC1621281E3E00B4D66A /* Cocoa.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8FA84DA724FB26AA0079E5A9 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				358D5656212DEDEC00F9E9BF /* cmdline.h */,
+				358D5654212DEDEC00F9E9BF /* cmdline.mm */,
+				358D5655212DEDEC00F9E9BF /* main.mm */,
+				358D5657212DEDEC00F9E9BF /* ResMenuItem.h */,
+				358D565B212DEDED00F9E9BF /* ResMenuItem.mm */,
+				358D565A212DEDED00F9E9BF /* SRApplicationDelegate.h */,
+				358D5653212DEDEC00F9E9BF /* SRApplicationDelegate.mm */,
+				358D5652212DEDEB00F9E9BF /* utils.h */,
+				358D5658212DEDEC00F9E9BF /* utils.mm */,
+				35C9D3AF212C04DA00D652F7 /* ViewController.swift */,
+				8FC72A1A24F664BA004E10E1 /* CharEncDec.swift */,
+				8FC72A1924F664BA004E10E1 /* Resolution.swift */,
+				8FC72A1B24F664BA004E10E1 /* Utils.swift */,
+				35554436212C7CB00063AEE7 /* EditDisplayPlistItem.swift */,
+				35CC4996212C54AF00704BD7 /* bridging.h */,
+				35C9D3B3212C04DD00D652F7 /* Main.storyboard */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		8FA84DA824FB27200079E5A9 /* etc */ = {
+			isa = PBXGroup;
+			children = (
+				35C9D3B6212C04DD00D652F7 /* Info.plist */,
+			);
+			path = etc;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -131,11 +147,12 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1000;
-				LastUpgradeCheck = 0910;
+				LastUpgradeCheck = 1160;
 				ORGANIZATIONNAME = "гык-sse2";
 				TargetAttributes = {
 					35C9D3AA212C04DA00D652F7 = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1160;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Sandbox = {
@@ -222,6 +239,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -229,6 +247,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -260,6 +279,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Debug;
 		};
@@ -277,6 +297,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -284,6 +305,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -308,6 +330,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Release;
 		};
@@ -318,9 +341,10 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = etc/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -328,10 +352,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.alkalay.RDM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OBJC_BRIDGING_HEADER = bridging.h;
+				SWIFT_OBJC_BRIDGING_HEADER = src/bridging.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -342,18 +366,19 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = etc/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = net.alkalay.RDM;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = bridging.h;
+				SWIFT_OBJC_BRIDGING_HEADER = src/bridging.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

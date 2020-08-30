@@ -63,15 +63,15 @@ import Cocoa
 			displayProductName = a
 		}
 		
-		resolutions = [[Resolution]]()
+		resolutions = []
 		for (idx, plist) in plists.enumerated() {
 			if let a = plist["scale-resolutions"] {
 				if let b = a as? NSArray {
 					resolutions.append(
-						(b as Array).map { Resolution.parse(nsdata: $0 as? NSData) }
+						(b as Array).map { Resolution(nsdata: $0 as? NSData) }
 					)
 
-					if idx != 0 {
+					if idx != 0 && resolutions.count > 1 {
 						for res in resolutions.last! {
 							if !(resolutions[0].contains { $0 == res }) {
 								resolutions[0].append(res)

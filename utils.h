@@ -32,4 +32,5 @@ extern "C"
 
 void CopyAllDisplayModes(CGDirectDisplayID display, modes_D4** modes, int* cnt);
 void SetDisplayModeNum(CGDirectDisplayID display, int modeNum);
+io_service_t IOServicePortFromCGDisplayID(CGDirectDisplayID displayID);
 

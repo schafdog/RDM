@@ -18,14 +18,12 @@ import Cocoa
 		?  "" : "/System" ) + "/Library/Displays/Contents/Resources/Overrides/DisplayVendorID-%x"
 
 	@IBOutlet var arrayController : NSArrayController!
-			  var plist	   = NSMutableDictionary()
-			  var sysplist = NSMutableDictionary()
+			  var plists		  : [NSMutableDictionary] = []
 
 	@IBOutlet weak var displayName : NSTextField!
 	@objc 		   var vendorID    : UInt32		  = 0
 	@objc 		   var productID   : UInt32		  = 0
-				   var resolutions : [Resolution] = []
-				   var sysResols   : [Resolution] = []
+				   var resolutions : [[Resolution]] = []
 	
 	@objc var displayProductName : String {
 		get {
@@ -36,44 +34,47 @@ import Cocoa
 		}
 	}
 
-	var dir : String {
+	var dirs : [String] {
 		get {
-			return String(format:ViewController.dirformat, vendorID)
+			let destdir = String(format:ViewController.dirformat, vendorID)
+
+			return ViewController.rootWriteable && ViewController.afterCatalina
+				? [destdir, "/System" + destdir] : [destdir]
 		}
 	}
 	
-	var fileName : String {
+	var fileNames : [String] {
 		get {
-			return String(format:"\(dir)/DisplayProductID-%x", productID)
+			return dirs.map { String(format:"\($0)/DisplayProductID-%x", productID) }
 		}
+	}
+
+	// For closing when esc key is pressed
+	override func cancelOperation(_ sender: Any?) {
+		self.view.window!.close()
 	}
 	
 	override func viewWillAppear() {
 		super.viewWillAppear()
 
-		plist = NSMutableDictionary.init(contentsOf: URL.init(fileURLWithPath: fileName)) ?? NSMutableDictionary()
+		plists = fileNames.map { NSMutableDictionary.init(contentsOf: URL.init(fileURLWithPath: $0)) ?? NSMutableDictionary() }
 
-		if let a = plist[kDisplayProductName] as? String {
+		if let a = plists[0][kDisplayProductName] as? String {
 			displayProductName = a
 		}
 		
-		resolutions = [Resolution]()
-		if let a = plist["scale-resolutions"] {
-			if let b = a as? NSArray {
-				resolutions = (b as Array).map { Resolution.parse(nsdata: $0 as? NSData) }
-			}
-		}
+		resolutions = [[Resolution]]()
+		for (idx, plist) in plists.enumerated() {
+			if let a = plist["scale-resolutions"] {
+				if let b = a as? NSArray {
+					resolutions.append(
+						(b as Array).map { Resolution.parse(nsdata: $0 as? NSData) }
+					)
 
-//		For backward-compatibility
-		if FileManager.default.fileExists(atPath: "/System" + fileName) {
-			if ViewController.rootWriteable && ViewController.afterCatalina {
-				sysplist = NSMutableDictionary.init(contentsOf: URL.init(fileURLWithPath: "/System" + fileName)) ?? NSMutableDictionary()
-				if let a = sysplist["scale-resolutions"] {
-					if let b = a as? NSArray {
-						sysResols = (b as Array).map { Resolution.parse(nsdata: $0 as? NSData) }
-						for res in sysResols {
-							if !(resolutions.contains { $0 == res }) {
-								resolutions.append(res)
+					if idx != 0 {
+						for res in resolutions.last! {
+							if !(resolutions[0].contains { $0 == res }) {
+								resolutions[0].append(res)
 							}
 						}
 					}
@@ -82,13 +83,18 @@ import Cocoa
 		}
 		
 		DispatchQueue.main.async {
-			self.arrayController.content = self.resolutions
+			self.arrayController.content = self.resolutions[0]
 		}
+	}
+
+	override func viewDidAppear() {
+		super.viewDidAppear()
+		view.window?.level = .floating // Always on top
 	}
 	
 	@IBAction func add(_ sender: Any) {
-		resolutions.append(Resolution())
-		arrayController.content = resolutions
+		resolutions[0].append(Resolution())
+		arrayController.content = resolutions[0]
 		arrayController.rearrangeObjects()
 	}
 	
@@ -96,39 +102,46 @@ import Cocoa
 	
 	@IBAction func remove(_ sender: Any) {
 		if arrayController.selectionIndex >= 0 {
-			let removed = resolutions.remove(at: arrayController.selectionIndex)
-			if let idx = sysResols.firstIndex(where: { $0 == removed }) {
-				sysResols.remove(at: idx) // For backward compatibility
-			}
-			arrayController.content = resolutions
+			let removed = resolutions[0].remove(at: arrayController.selectionIndex)
+			arrayController.content = resolutions[0]
 			arrayController.rearrangeObjects()
+
+			// For backward compatibility
+			if resolutions.count > 1 {
+				if let idx = resolutions[1].firstIndex(where: { $0 == removed }) {
+					resolutions[1].remove(at: idx)
+				}
+			}
 		}
 	}
 
 	@IBAction func save(_ sender: Any) {
-		let tmpFile	   = NSTemporaryDirectory() + "tmp",
-			tmpFileSys = NSTemporaryDirectory() + "tmp_sys"
+		var saveScripts: [String] = []
 
-		plist.setValue(displayProductName as NSString, forKey: kDisplayProductName)
-		plist.setValue(resolutions.map { $0.toData() } as NSArray, forKey: "scale-resolutions")
+		for ((plist, resol), (dir, fileName)) in zip(zip(plists, resolutions), zip(dirs, fileNames)) {
+			let tmpFile = NSTemporaryDirectory() + UUID().uuidString
 
-		plist.write(toFile: tmpFile, atomically: false)
-		var saveScript = "mkdir -p '\(dir)' && cp '\(tmpFile)' '\(fileName)'"
+			plist.setValue(displayProductName as NSString, forKey: kDisplayProductName)
+			plist.setValue(resol.map { $0.toData() } as NSArray, forKey: "scale-resolutions")
+			plist.write(toFile: tmpFile, atomically: false)
 
-//		For backward compatibility
-		if ViewController.rootWriteable && ViewController.afterCatalina {
-			sysplist.setValue(displayProductName as NSString, forKey: kDisplayProductName)
-			sysplist.setValue(sysResols.map { $0.toData() } as NSArray, forKey: "scale-resolutions")
-
-			sysplist.write(toFile: tmpFileSys, atomically: false)
-			saveScript += " && mkdir -p '\("/System" + dir)' && cp '\(tmpFileSys)' '\("/System" + fileName)'"
+			saveScripts.append("mkdir -p '\(dir)' && cp '\(tmpFile)' '\(fileName)' && rm '\(tmpFile)'")
 		}
 
-		execAppleScript("do shell script \"" + saveScript + "\"", withAdminPriv: true)
-
-		try? FileManager.default.removeItem(atPath: tmpFile)
-		try? FileManager.default.removeItem(atPath: tmpFileSys)
-		view.window!.close()
+		if let errDict = execAppleScript("do shell script \"" + saveScripts.joined(separator: " && ") + "\"",
+									 withAdminPriv: true) {
+			let alert = NSAlert()
+			if let reason = errDict.object(forKey: "NSAppleScriptErrorBriefMessage") {
+				alert.messageText = (reason as! NSString) as String
+			} else {
+				alert.messageText = "Unknown error, please try again."
+				print(errDict)
+			}
+			alert.alertStyle = .critical
+			alert.beginSheetModal(for: view.window!)
+		} else {
+			view.window!.close()
+		}
 	}
 	
 	override var representedObject: Any? {

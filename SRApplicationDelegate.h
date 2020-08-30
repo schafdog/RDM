@@ -4,7 +4,7 @@
 @interface SRApplicationDelegate : NSObject <NSApplicationDelegate, NSMenuDelegate>
 {
 	NSMenu* statusMenu;
-	NSWindowController *editResolutionsController;
+	NSWindowController* editResolutionsController;
 	NSStatusItem* statusItem;
 }
 - (void) refreshStatusMenu;

@@ -28,11 +28,17 @@ extension String {
 
 // For decoding
 func swapUInt32Data(data : Data) -> Data {
-	var mdata = data // make a mutable copy
 	let count = data.count / MemoryLayout<UInt32>.size
-	mdata.withUnsafeMutableBytes { (i32ptr: UnsafeMutablePointer<UInt32>) in
-		for i in 0..<count {
-			i32ptr[i] = i32ptr[i].byteSwapped
+	var mdata = Data(count: data.count)
+
+	data.withUnsafeBytes { (inbuffer: UnsafeRawBufferPointer)  in
+		mdata.withUnsafeMutableBytes { (outbuffer: UnsafeMutableRawBufferPointer) in
+			let inpointer  = inbuffer .bindMemory(to: UInt32.self),
+				outpointer = outbuffer.bindMemory(to: UInt32.self)
+
+			for i in 0..<count {
+				outpointer[i] = inpointer[i].byteSwapped
+			}
 		}
 	}
 	return mdata

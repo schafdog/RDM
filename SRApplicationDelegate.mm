@@ -135,7 +135,8 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 			}
 			
 			NSString *screenName = @"";
-			NSDictionary *deviceInfo = (__bridge NSDictionary *)IODisplayCreateInfoDictionary(CGDisplayIOServicePort(display), kIODisplayOnlyPreferredName);
+			NSDictionary *deviceInfo = (__bridge NSDictionary *)IODisplayCreateInfoDictionary(IOServicePortFromCGDisplayID(display),
+																							  kIODisplayOnlyPreferredName);
 			NSDictionary *localizedNames = [deviceInfo objectForKey:[NSString stringWithUTF8String:kDisplayProductName]];
 			if ([localizedNames count] > 0) {
 				screenName = [localizedNames objectForKey:[[localizedNames allKeys] objectAtIndex:0]];

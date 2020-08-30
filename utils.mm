@@ -1,5 +1,6 @@
 
 #import <Foundation/Foundation.h>
+#import <IOKit/graphics/IOGraphicsLib.h>
 
 #import <dlfcn.h>
 
@@ -31,4 +32,56 @@ void SetDisplayModeNum(CGDirectDisplayID display, int modeNum)
 	CGBeginDisplayConfiguration(&config);
 	CGSConfigureDisplayMode(config, display, modeNum);
 	CGCompleteDisplayConfiguration(config, kCGConfigurePermanently);
+}
+
+
+io_service_t IOServicePortFromCGDisplayID(CGDirectDisplayID displayID)
+{
+	io_iterator_t iter;
+	io_service_t serv, servicePort = 0;
+
+	// releases matching for us
+	if (IOServiceGetMatchingServices(kIOMasterPortDefault,
+									 IOServiceMatching("IODisplayConnect"),
+									 &iter) != 0) {
+		return 0;
+	}
+
+	CFDictionaryRef info;
+	CFIndex vendorID, productID;
+	CFNumberRef vendorIDRef, productIDRef;
+
+	while ((serv = IOIteratorNext(iter)) != 0) {
+		info = IODisplayCreateInfoDictionary(serv,
+											 kIODisplayOnlyPreferredName);
+
+		vendorIDRef = static_cast<CFNumberRef>(CFDictionaryGetValue(info,
+																	CFSTR(kDisplayVendorID)));
+		productIDRef = static_cast<CFNumberRef>(CFDictionaryGetValue(info,
+																	 CFSTR(kDisplayProductID)));
+
+		if (!vendorIDRef || !productIDRef) {
+			CFRelease(info);
+			continue;
+		}
+
+		CFNumberGetValue(vendorIDRef, kCFNumberCFIndexType,
+						 &vendorID);
+		CFNumberGetValue(productIDRef, kCFNumberCFIndexType,
+						 &productID);
+
+		if (CGDisplayVendorNumber(displayID) != vendorID ||
+			CGDisplayModelNumber(displayID) != productID) {
+			CFRelease(info);
+			continue;
+		}
+
+		// we're a match
+		servicePort = serv;
+		CFRelease(info);
+		break;
+	}
+
+	IOObjectRelease(iter);
+	return servicePort;
 }

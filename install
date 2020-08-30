@@ -10,8 +10,7 @@ while [[ -z $__flag ]]; do
             __flag=true
             ;;
         [Nn]*   )
-            read -p "Please type destination directory: " RDM_PATH
-            read -p "Install RDM to ${RDM_PATH}? (Y/n): " __doInstall
+            exit 1
             ;;
         *       )
             read -p "Please type y or n: " __doInstall

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+[[ -z $RDM_PATH ]] && RDM_PATH='/Applications'
+
+read -p "Uninstall RDM from ${RDM_PATH}? (y/N): " __doUninstall
+
+while [[ -z $__flag ]]; do
+    case "$__doUninstall" in
+        [Yy]*   )
+            __flag=true
+            ;;
+        [Nn]*|'')
+            exit 1
+            ;;
+        *       )
+            read -p "Please type y or n: " __doUninstall
+            ;;
+    esac
+done
+
+osascript -e 'quit app "RDM"' \
+&& rm -rf "${RDM_PATH}/RDM.app" \
+&& rm -f "${HOME}/Library/Preferences/net.alkalay.RDM.plist" \
+&& echo 'Uninstall finished!'

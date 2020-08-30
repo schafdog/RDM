@@ -81,6 +81,10 @@ import Cocoa
 				}
 			}
 		}
+
+		if resolutions.isEmpty {
+			resolutions.append([])
+		}
 		
 		DispatchQueue.main.async {
 			self.arrayController.content = self.resolutions[0]

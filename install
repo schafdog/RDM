@@ -1,0 +1,35 @@
+#!/bin/bash
+
+[[ -z $RDM_PATH ]] && RDM_PATH='/Applications'
+
+read -p "Install RDM to ${RDM_PATH}? (Y/n): " __doInstall
+
+while [[ -z $__flag ]]; do
+    case "$__doInstall" in
+        [Yy]*|'')
+            __flag=true
+            ;;
+        [Nn]*   )
+            read -p "Please type destination directory: " RDM_PATH
+            read -p "Install RDM to ${RDM_PATH}? (Y/n): " __doInstall
+            ;;
+        *       )
+            read -p "Please type y or n: " __doInstall
+            ;;
+    esac
+done
+
+__tempdir=$(mktemp -d) 2>&1 > /dev/null
+__ERR_LOG="
+$(xcodebuild -archivePath "${__tempdir}/RDM" -scheme RDM archive 2>&1 > /dev/null)
+$(xcodebuild -exportArchive -archivePath "${__tempdir}/RDM.xcarchive" -exportPath "$RDM_PATH" -exportOptionsPlist etc/export.plist 2>&1 > /dev/null)"
+
+if [[ $? = 0 ]]; then
+    rm -rf "$__tempdir" &>/dev/null
+    echo "Build finished!"
+else
+    echo "
+An error occured; try again
+${__ERR_LOG}"
+    exit 100
+fi

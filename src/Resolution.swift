@@ -11,48 +11,66 @@ import Foundation
 @objc class Resolution : NSObject {
 	private var _width	   : UInt32
 	private var _height	   : UInt32
+	private var _hiDPI	   : Bool
 	private var _hiDPIFlag : [UInt32]
 
 	static private let _defaultHiDPIFlag : [UInt32] = [0x1, 0x200000]
 
 	// For NSObject properties
-	@objc var hiDPI : Bool
 
 	@objc var width : UInt32 {
 		get {
-			return hiDPI ? _width / 2 : _width
+			return _hiDPI ? _width / 2 : _width
 		}
 
 		set(value) {
-			_width = hiDPI ? value * 2 : value
+			_width = _hiDPI ? value * 2 : value
 		}
 	}
 
 	@objc var height : UInt32 {
 		get {
-			return hiDPI ? _height / 2 : _height
+			return _hiDPI ? _height / 2 : _height
 		}
 
 		set(value) {
-			_height = hiDPI ? value * 2 : value
+			_height = _hiDPI ? value * 2 : value
+		}
+	}
+
+	@objc var hiDPI : Bool {
+		get {
+			return _hiDPI
+		}
+
+		set(value) {
+			if _hiDPI != value {
+				_hiDPI = value
+
+				if value {
+					_width  *= 2
+					_height *= 2
+				} else {
+					_width  /= 2
+					_height /= 2
+				}
+			}
 		}
 	}
 
 	override init() {
-		self.hiDPI = false
-
 		self._width = 0
 		self._height = 0
+		self._hiDPI = false
 		self._hiDPIFlag = Resolution._defaultHiDPIFlag
 
 		super.init()
 	}
 
 	private init(width : UInt32, height : UInt32, hiDPI : Bool, origin : [UInt32]) {
-		self.hiDPI		= hiDPI
-
 		self._width		= width
 		self._height	= height
+		self._hiDPI		= hiDPI
 		self._hiDPIFlag = hiDPI && (origin.count > 2)
 			? Array(origin[2...]) : Resolution._defaultHiDPIFlag // For hiDPI toggle feature
 
@@ -81,7 +99,7 @@ import Foundation
 
 		d.append(String(format: "%08X", self._width).hexadecimal!)
 		d.append(String(format: "%08X", self._height).hexadecimal!)
-		if self.hiDPI {
+		if self._hiDPI {
 			for flag in _hiDPIFlag {
 				d.append(String(format: "%08X", flag).hexadecimal!)
 			}

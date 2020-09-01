@@ -14,15 +14,17 @@ import Cocoa
 	static let rootWriteable = !isSIPActive()
 	static let afterCatalina = ProcessInfo().isOperatingSystemAtLeast(
 		OperatingSystemVersion(majorVersion: 10, minorVersion: 15, patchVersion: 0))
-	static let dirformat	 = ( ViewController.afterCatalina
-		?  "" : "/System" ) + "/Library/Displays/Contents/Resources/Overrides/DisplayVendorID-%x"
+	static let rootdir		 = ( ViewController.afterCatalina
+		?  "" : "/System" ) + "/Library/Displays/Contents/Resources/Overrides"
+	static let dirformat	 = "DisplayVendorID-%x"
+	static let fileformat	 = "DisplayProductID-%x"
 
 	@IBOutlet var arrayController : NSArrayController!
 			  var plists		  : [NSMutableDictionary] = []
 
 	@IBOutlet weak var displayName : NSTextField!
-	@objc 		   var vendorID    : UInt32		  = 0
-	@objc 		   var productID   : UInt32		  = 0
+	@objc 		   var vendorID    : UInt32			= 0
+	@objc 		   var productID   : UInt32			= 0
 				   var resolutions : [[Resolution]] = []
 	
 	@objc var displayProductName : String {
@@ -36,7 +38,7 @@ import Cocoa
 
 	var dirs : [String] {
 		get {
-			let destdir = String(format:ViewController.dirformat, vendorID)
+			let destdir = String(format: "\(ViewController.rootdir)/\(ViewController.dirformat)", vendorID)
 
 			return ViewController.rootWriteable && ViewController.afterCatalina
 				? [destdir, "/System" + destdir] : [destdir]
@@ -45,7 +47,7 @@ import Cocoa
 	
 	var fileNames : [String] {
 		get {
-			return dirs.map { String(format:"\($0)/DisplayProductID-%x", productID) }
+			return dirs.map { String(format:"\($0)/\(ViewController.fileformat)", productID) }
 		}
 	}
 
@@ -62,17 +64,17 @@ import Cocoa
 		if let a = plists[0][kDisplayProductName] as? String {
 			displayProductName = a
 		}
-		
+
 		resolutions = []
 		for (idx, plist) in plists.enumerated() {
+			resolutions.append([])
+
 			if let a = plist["scale-resolutions"] {
 				if let b = a as? NSArray {
-					resolutions.append(
-						(b as Array).map { Resolution(nsdata: $0 as? NSData) }
-					)
+					resolutions[idx] = (b as Array).map { Resolution(nsdata: $0 as? NSData) }
 
 					if idx != 0 && resolutions.count > 1 {
-						for res in resolutions.last! {
+						for res in resolutions[idx] {
 							if !(resolutions[0].contains { $0 == res }) {
 								resolutions[0].append(res)
 							}
@@ -82,9 +84,10 @@ import Cocoa
 			}
 		}
 
-		if resolutions.isEmpty {
-			resolutions.append([])
-		}
+//		For better UI
+		view.window!.standardWindowButton(.miniaturizeButton)!.isHidden = true
+		view.window!.standardWindowButton(.zoomButton)!.isHidden = true
+		view.window!.styleMask.insert(.resizable)
 		
 		DispatchQueue.main.async {
 			self.arrayController.content = self.resolutions[0]
@@ -105,22 +108,33 @@ import Cocoa
 	@IBOutlet weak var removeButton: NSButton!
 	
 	@IBAction func remove(_ sender: Any) {
-		if arrayController.selectionIndex >= 0 {
-			let removed = resolutions[0].remove(at: arrayController.selectionIndex)
-			arrayController.content = resolutions[0]
-			arrayController.rearrangeObjects()
+		if arrayController.selectionIndexes.count > 0 {
+			let removed = arrayController.selectionIndexes.map { resolutions[0][$0] }
 
 			// For backward compatibility
 			if resolutions.count > 1 {
-				if let idx = resolutions[1].firstIndex(where: { $0 == removed }) {
-					resolutions[1].remove(at: idx)
+				for rem in removed {
+					if let j = resolutions[1].firstIndex(where: { $0 == rem }) {
+						resolutions[1].remove(at: j)
+					}
 				}
 			}
+
+			resolutions[0].remove(at: arrayController.selectionIndexes)
+			arrayController.content = resolutions[0]
+			arrayController.rearrangeObjects()
 		}
 	}
 
 	@IBAction func save(_ sender: Any) {
-		var saveScripts: [String] = []
+		var saveScripts = [String]()
+
+		if ViewController.rootWriteable {
+			if let errDict = RestoreSettingsItem.backupSettings(originalPlistPath: fileNames.last!) {
+				constructAlert(errDict).beginSheetModal(for: view.window!)
+				return
+			}
+		}
 
 		for ((plist, resol), (dir, fileName)) in zip(zip(plists, resolutions), zip(dirs, fileNames)) {
 			let tmpFile = NSTemporaryDirectory() + UUID().uuidString
@@ -129,20 +143,14 @@ import Cocoa
 			plist.setValue(resol.map { $0.toData() } as NSArray, forKey: "scale-resolutions")
 			plist.write(toFile: tmpFile, atomically: false)
 
-			saveScripts.append("mkdir -p '\(dir)' && cp '\(tmpFile)' '\(fileName)' && rm '\(tmpFile)'")
+			saveScripts.append("mkdir -p '\(dir)'")
+			saveScripts.append("cp '\(tmpFile)' '\(fileName)'")
+			saveScripts.append("rm '\(tmpFile)'")
 		}
 
-		if let errDict = execAppleScript("do shell script \"" + saveScripts.joined(separator: " && ") + "\"",
-									 withAdminPriv: true) {
-			let alert = NSAlert()
-			if let reason = errDict.object(forKey: "NSAppleScriptErrorBriefMessage") {
-				alert.messageText = (reason as! NSString) as String
-			} else {
-				alert.messageText = "Unknown error, please try again."
-				print(errDict)
-			}
-			alert.alertStyle = .critical
-			alert.beginSheetModal(for: view.window!)
+		if let errDict = execShellScript(saveScripts.joined(separator: " && "),
+										 withAdminPriv: true) {
+			constructAlert(errDict).beginSheetModal(for: view.window!)
 		} else {
 			view.window!.close()
 		}

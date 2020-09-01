@@ -18,6 +18,8 @@
 		35C9D3B0212C04DA00D652F7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35C9D3AF212C04DA00D652F7 /* ViewController.swift */; };
 		35C9D3B2212C04DD00D652F7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 35C9D3B1212C04DD00D652F7 /* Assets.xcassets */; };
 		35C9D3B5212C04DD00D652F7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 35C9D3B3212C04DD00D652F7 /* Main.storyboard */; };
+		8F13DECC24FDCE790049A2DF /* export.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8F13DECB24FDCE790049A2DF /* export.plist */; };
+		8F48E61724FC761C0073123B /* RestoreSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F48E61624FC761C0073123B /* RestoreSettings.swift */; };
 		8FC72A1C24F664BA004E10E1 /* Resolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC72A1924F664BA004E10E1 /* Resolution.swift */; };
 		8FC72A1D24F664BA004E10E1 /* CharEncDec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC72A1A24F664BA004E10E1 /* CharEncDec.swift */; };
 		8FC72A1E24F664BA004E10E1 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC72A1B24F664BA004E10E1 /* Utils.swift */; };
@@ -43,6 +45,8 @@
 		35C9D3B6212C04DD00D652F7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		35CC4996212C54AF00704BD7 /* bridging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bridging.h; sourceTree = "<group>"; };
 		35E3DC1621281E3E00B4D66A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		8F13DECB24FDCE790049A2DF /* export.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = export.plist; sourceTree = "<group>"; };
+		8F48E61624FC761C0073123B /* RestoreSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreSettings.swift; sourceTree = "<group>"; };
 		8FC72A1924F664BA004E10E1 /* Resolution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Resolution.swift; sourceTree = "<group>"; };
 		8FC72A1A24F664BA004E10E1 /* CharEncDec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CharEncDec.swift; sourceTree = "<group>"; };
 		8FC72A1B24F664BA004E10E1 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -107,6 +111,7 @@
 				8FC72A1924F664BA004E10E1 /* Resolution.swift */,
 				8FC72A1B24F664BA004E10E1 /* Utils.swift */,
 				35554436212C7CB00063AEE7 /* EditDisplayPlistItem.swift */,
+				8F48E61624FC761C0073123B /* RestoreSettings.swift */,
 				35CC4996212C54AF00704BD7 /* bridging.h */,
 			);
 			path = src;
@@ -116,6 +121,7 @@
 			isa = PBXGroup;
 			children = (
 				35C9D3B6212C04DD00D652F7 /* Info.plist */,
+				8F13DECB24FDCE790049A2DF /* export.plist */,
 			);
 			path = etc;
 			sourceTree = "<group>";
@@ -185,6 +191,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8F13DECC24FDCE790049A2DF /* export.plist in Resources */,
 				358D5660212DEDED00F9E9BF /* README.md in Resources */,
 				35C9D3B2212C04DD00D652F7 /* Assets.xcassets in Resources */,
 				35C9D3B5212C04DD00D652F7 /* Main.storyboard in Resources */,
@@ -207,6 +214,7 @@
 				358D565D212DEDED00F9E9BF /* cmdline.mm in Sources */,
 				35C9D3B0212C04DA00D652F7 /* ViewController.swift in Sources */,
 				358D565E212DEDED00F9E9BF /* main.mm in Sources */,
+				8F48E61724FC761C0073123B /* RestoreSettings.swift in Sources */,
 				8FC72A1C24F664BA004E10E1 /* Resolution.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

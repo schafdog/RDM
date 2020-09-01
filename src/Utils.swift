@@ -6,7 +6,7 @@
 //  Copyright © 2020 гык-sse2. All rights reserved.
 //
 
-import Foundation
+import AppKit
 
 let disabledProtections = [
 	"System Integrity Protection status: disabled.",
@@ -46,4 +46,44 @@ func execAppleScript(_ script: String, withAdminPriv: Bool = false) -> NSDiction
 	}
 
 	return NSDictionary()
+}
+
+// For convenience
+func execShellScript(_ script: String, withAdminPriv: Bool = false) -> NSDictionary? {
+	return execAppleScript("do shell script \"\(script)\"", withAdminPriv: withAdminPriv)
+}
+
+func constructAlert(_ errDict: NSDictionary, style: NSAlert.Style = .critical) -> NSAlert {
+	let alert = NSAlert()
+	alert.alertStyle = style
+
+	if let reason = errDict.object(forKey: "NSAppleScriptErrorBriefMessage") {
+		alert.messageText = reason as! String
+	} else {
+		alert.messageText = "Unknown error, please try again."
+		print(errDict)
+	}
+
+	return alert
+}
+
+extension Array {
+	mutating func remove(at idxs: IndexSet) {
+		guard var i = idxs.first, i < count else { return }
+
+		var j = index(after: i)
+		var k = idxs.integerGreaterThan(i) ?? endIndex
+
+		while j != endIndex {
+			if k != j {
+				swapAt(i, j)
+				formIndex(after: &i)
+			} else {
+				k = idxs.integerGreaterThan(k) ?? endIndex
+			}
+			formIndex(after: &j)
+		}
+
+		removeSubrange(i...)
+	}
 }

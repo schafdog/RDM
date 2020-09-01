@@ -18,6 +18,7 @@ while [[ -z $__flag ]]; do
     esac
 done
 
+osascript -e 'quit app "RDM"'
 __tempdir=$(mktemp -d) 2>&1 > /dev/null
 __ERR_LOG="
 $(xcodebuild -archivePath "${__tempdir}/RDM" -scheme RDM archive 2>&1 > /dev/null)
@@ -25,6 +26,7 @@ $(xcodebuild -exportArchive -archivePath "${__tempdir}/RDM.xcarchive" -exportPat
 
 if [[ $? = 0 ]]; then
     rm -rf "$__tempdir" &>/dev/null
+    open "${RDM_PATH}/RDM.app"
     echo "Build finished!"
 else
     echo "

@@ -23,6 +23,42 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 }
 
 
+void AlertRestoreSettings(RestoreSettingsItem *item) {
+	NSAlert *alert = [[NSAlert alloc] init];
+	[alert addButtonWithTitle:@"OK"];
+	[alert addButtonWithTitle:@"Cancel"];
+	[alert setMessageText:[NSString stringWithFormat: @"Restore all settings for %@?",
+						   [item.displayName stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]]]];
+
+	[alert setInformativeText:@"Reboot is required to apply changes. For safety, settings under /System would not be removed if no backup file was found. Use Edit... menu to manually reset those settings anyway."];
+	[alert setAlertStyle:NSWarningAlertStyle];
+
+	NSArray *buttons = [alert buttons];
+	[[buttons objectAtIndex:0] setKeyEquivalent:@"\r"];	  // Return key
+	[[buttons objectAtIndex:1] setKeyEquivalent:@"\033"]; // Esc key
+
+	[NSApp activateIgnoringOtherApps:YES];
+	NSPanel* panel = static_cast<NSPanel*>([alert window]);
+	panel.floatingPanel = YES;
+
+	if ([alert runModal] == NSAlertFirstButtonReturn) {
+		if ([item restoreSettings]) {
+			NSAlert *finishAlert = [[NSAlert alloc] init];
+			[finishAlert addButtonWithTitle:@"OK"];
+			[finishAlert setMessageText:[NSString stringWithFormat: @"Restore was successfull!"]];
+			[finishAlert setAlertStyle:NSInformationalAlertStyle];
+
+			NSArray *finishButtons = [finishAlert buttons];
+			[[finishButtons objectAtIndex:0] setKeyEquivalent:@"\r"];	  // Return key
+
+			[NSApp activateIgnoringOtherApps:YES];
+			NSPanel* finPanel = static_cast<NSPanel*>([finishAlert window]);
+			finPanel.floatingPanel = YES;
+
+			[finishAlert runModal];
+		}
+	}
+}
 
 
 @implementation SRApplicationDelegate
@@ -146,6 +182,8 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 
 			[submenu addItem:[[EditDisplayPlistItem alloc] initWithTitle:@"Edit..." action:@selector(editResolutions:) vendorID:CGDisplayVendorNumber(display) productID:CGDisplayModelNumber(display) displayName:screenName]];
 
+			[submenu addItem:[[RestoreSettingsItem alloc] initWithTitle:@"Restore..." action:@selector(restoreSettings:) vendorID:CGDisplayVendorNumber(display) productID:CGDisplayModelNumber(display) displayName:screenName]];
+
 			NSString* title = [NSString stringWithFormat: @"%d × %d%@",
 							   [mainItem width], [mainItem height], ([mainItem scale] == 2.0f) ? @" ⚡️" : @""];
 			
@@ -224,12 +262,18 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 	NSStoryboard *storyBoard = [NSStoryboard storyboardWithName:@"Main" bundle:nil];
 	editResolutionsController = [storyBoard instantiateControllerWithIdentifier:@"edit"];
 	ViewController *vc = (ViewController*)editResolutionsController.window.contentViewController;
-	vc.vendorID = sender.vendorID;
-	vc.productID = sender.productID;
-	vc.displayProductName = sender.displayName;
+	vc.vendorID = sender.vendorID; // 1552;
+	vc.productID = sender.productID; // 0xa044;
+	vc.displayProductName = sender.displayName; // @"DEBUG";
 	[editResolutionsController showWindow:self];
 	[editResolutionsController.window makeKeyAndOrderFront:self];
 	[[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+}
+
+
+
+- (void) restoreSettings: (RestoreSettingsItem *)sender {
+	AlertRestoreSettings(sender);
 }
 
 

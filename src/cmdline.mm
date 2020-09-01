@@ -5,10 +5,12 @@ extern "C"
 
 
 #import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 
 #import <dlfcn.h>
 
 #import "utils.h"
+//#import "RDM-Swift.h"
 
 void usage()
 {
@@ -18,8 +20,8 @@ void usage()
 					"  --scale    (-s)  Scale (2.0 = Retina, default=current)\n"
 					"  --bits     (-b)  Color depth (default=current)\n"
 					"  --display  (-d)  Select display # (default=main)\n"
-					"  --displays (-l) List available displays\n"
-			                "  --modes    (-m) List available modes\n");
+					"  --displays (-l)  List available displays\n"
+					"  --modes    (-m)  List available modes\n");
 }
 
 int cmdline_main(int argc, char * const*argv)
@@ -32,7 +34,6 @@ int cmdline_main(int argc, char * const*argv)
 		CGFloat scale = 0.0f;
 		int bitRes = 0;
 		int displayNo = 0;
-		double rotation = -1;
 		
 		bool listDisplays = 0;
 		bool listModes = 0;
@@ -49,7 +50,7 @@ int cmdline_main(int argc, char * const*argv)
 		};
 
 		int ch;
-		while ((ch = getopt_long(argc, argv, "w:h:s:b:d:lmr:", longopts, NULL)) != -1) {
+		while ((ch = getopt_long(argc, argv, "w:h:s:b:d:lm", longopts, NULL)) != -1) {
 			switch (ch) {
 			case 'w':
 				width = atoi(optarg);
@@ -71,9 +72,6 @@ int cmdline_main(int argc, char * const*argv)
 				break;
 			case 'm':
 				listModes = 1;
-				break;
-			case 'r':
-				rotation = atof(optarg);
 				break;
 			default:
 				usage();
@@ -176,14 +174,7 @@ int cmdline_main(int argc, char * const*argv)
 			return 0;
 			*/
 		}
-		
-		if(rotation != -1.0f)
-		{
-			fprintf(stderr, "Sorry, cannot adjust rotation at this time!\n");
-			exit(1);
-		}
-		
-		// fill in missing details
+
 		{
 			int modeNum;
 			CGSGetCurrentDisplayMode(display, &modeNum);

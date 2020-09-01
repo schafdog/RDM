@@ -29,7 +29,7 @@
 		NSString* title;
 		NSString* emoji = (scale == 2.0f) ? @" ⚡️" : @"";
 		if(refreshRate)
-			title = [NSString stringWithFormat: @"%d × %d%@, %.0f Hz", width, height, emoji, refreshRate];
+			title = [NSString stringWithFormat: @"%d × %d%@, %d Hz", width, height, emoji, refreshRate];
 		else
 			title = [NSString stringWithFormat: @"%d × %d%@", width, height, emoji];
 
@@ -52,7 +52,7 @@
 	}
 	
 	if (textFormat == 2)
-		title = [NSString stringWithFormat: @"%.0f Hz", refreshRate];
+		title = [NSString stringWithFormat: @"%d Hz", refreshRate];
 
 	if(title)
 		[self setTitle: title];
@@ -83,7 +83,7 @@
 	return height;
 }
 
-- (float) refreshRate
+- (int) refreshRate
 {
 	return refreshRate;
 }

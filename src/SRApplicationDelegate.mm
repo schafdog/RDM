@@ -224,7 +224,7 @@ void AlertRestoreSettings(RestoreSettingsItem *item) {
 			}
 			if(idealRefreshRate)
 			{
-				NSMenuItem* freq = [[NSMenuItem alloc] initWithTitle: [NSString stringWithFormat: @"%.0f Hz", [mainItem refreshRate]] action: nil keyEquivalent: @""];
+				NSMenuItem* freq = [[NSMenuItem alloc] initWithTitle: [NSString stringWithFormat: @"%d Hz", [mainItem refreshRate]] action: nil keyEquivalent: @""];
 			
 				if([submenu numberOfItems] > 1)
 					[freq setSubmenu: submenu];

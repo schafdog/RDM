@@ -15,7 +15,7 @@ static inline CFDictionaryRef CGDisplayModeGetDictionary(CGDisplayModeRef mode) 
 	
 	//CGDisplayModeRef _mode;
 	
-	float refreshRate;
+	int refreshRate;
 	float scale;
 	int colorDepth;
 	int width;
@@ -38,7 +38,7 @@ static inline CFDictionaryRef CGDisplayModeGetDictionary(CGDisplayModeRef mode) 
 - (int) colorDepth;
 - (int) width;
 - (int) height;
-- (float) refreshRate;
+- (int) refreshRate;
 - (float) scale;
 
 - (NSComparisonResult) compareResMenuItem: (ResMenuItem*) otherItem;

@@ -228,8 +228,7 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 	vc.productID = sender.productID; // 0xa044;
 	vc.displayProductName = sender.displayName; // @"DEBUG";
 	[editResolutionsController showWindow:self];
-	[editResolutionsController.window makeKeyAndOrderFront:self];
-	[[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+	[NSApp activateIgnoringOtherApps:YES];
 }
 
 

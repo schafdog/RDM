@@ -44,9 +44,10 @@ import Cocoa
 		backupScripts.append("mkdir -p '\(backupDir)'")
 		backupScripts.append("cp '\(originalPlistPath)' '\(backupDir)/\(plistSpecificPath.last!)'")
 
-		return execShellScript(backupScripts.joined(separator: " && "))
+		return NSAppleScript.executeAndReturnError(source: backupScripts.joined(separator: " && "), asType: .shell)
 	}
 
+// TODO: Maybe for uninstalling?
 //	@objc static func restoreAllSettings() {
 //		var restoreScripts = [String]()
 //		let originalDir	   = ViewController.rootdir.hasPrefix("/System") ? ViewController.rootdir : "/System" + ViewController.rootdir
@@ -66,7 +67,42 @@ import Cocoa
 //		}
 //	}
 
-	@objc func restoreSettings() -> Bool {
+// TODO: porting whole application to swift
+//	@objc func restoreSettingsGUI() {
+//		let prompt = NSAlert()
+//
+//		prompt.window.level = .floating
+//		prompt.alertStyle	= .warning
+//		prompt.messageText	= "Restore all settings for \(displayName.trimmingCharacters(in: .whitespacesAndNewlines))?"
+//
+//		prompt.addButton(withTitle: "OK")
+//		prompt.addButton(withTitle: "Cancel")
+//
+//		prompt.buttons[0].keyEquivalent = "\r"
+//		prompt.buttons[1].keyEquivalent = "\u{1b}"
+//
+//		NSApp.activate(ignoringOtherApps: true)
+//		if prompt.runModal() == .alertFirstButtonReturn {
+//			var alert: NSAlert!
+//
+//			if let error = restoreSettings() {
+//				alert = NSAlert(fromDict: error)
+//			} else {
+//				alert = NSAlert()
+//				alert.window.level = .floating
+//				alert.alertStyle   = .informational
+//				alert.messageText  = "Restore success!"
+//
+//				alert.addButton(withTitle: "OK")
+//				alert.buttons[0].keyEquivalent = "\r"
+//			}
+//
+//			NSApp.activate(ignoringOtherApps: true)
+//			alert.runModal()
+//		}
+//	}
+
+	@objc func restoreSettings() -> NSDictionary? {
 		var restoreScripts = [String]()
 		var rootdirs	   = [ViewController.rootdir]
 
@@ -76,21 +112,23 @@ import Cocoa
 		}
 
 		for dir in rootdirs {
-			if dir.hasPrefix("/System") {
-				restoreScripts.append("mv -f '\(RestoreSettingsItem.backupDir)/\(filePath)' '\(dir)/\(filePath)'")
-			} else if FileManager.default.fileExists(atPath: "\(dir)/\(filePath)") {
-					restoreScripts.append("rm -f '\(dir)/\(filePath)'")
+			let fullPath = "\(dir)/\(filePath)"
+
+			if FileManager.default.fileExists(atPath: fullPath) {
+				if dir.hasPrefix("/System") {
+					restoreScripts.append("mv -f '\(RestoreSettingsItem.backupDir)/\(filePath)' '\(fullPath)'")
+				} else {
+					restoreScripts.append("rm -f '\(fullPath)'")
+				}
 			}
 		}
 
+		var error: NSDictionary? = nil
 		if restoreScripts.count > 0 {
-			if let errDict = execShellScript(restoreScripts.joined(separator: " && "),
-											 withAdminPriv: true) {
-				constructAlert(errDict).runModal()
-				return false
-			}
+			error = NSAppleScript.executeAndReturnError(source: restoreScripts.joined(separator: " && "),
+														asType: .shell,
+														withAdminPriv: true)
 		}
-
-		return true
+		return error
 	}
 }

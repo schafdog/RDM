@@ -27,19 +27,10 @@ extension String {
 }
 
 // For decoding
-func swapUInt32Data(data : Data) -> Data {
-	let count = data.count / MemoryLayout<UInt32>.size
-	var mdata = Data(count: data.count)
-
-	data.withUnsafeBytes { (inbuffer: UnsafeRawBufferPointer)  in
-		mdata.withUnsafeMutableBytes { (outbuffer: UnsafeMutableRawBufferPointer) in
-			let inpointer  = inbuffer .bindMemory(to: UInt32.self),
-				outpointer = outbuffer.bindMemory(to: UInt32.self)
-
-			for i in 0..<count {
-				outpointer[i] = inpointer[i].byteSwapped
-			}
-		}
+extension NSData {
+	func getArrayOfSwappedBytes<T: FixedWidthInteger>(asType: T.Type) -> [T] {
+		let count = self.count / MemoryLayout<T>.size
+		let ptr = self.bytes.assumingMemoryBound(to: asType)
+		return (0..<count).map { ptr[$0].byteSwapped }
 	}
-	return mdata
 }

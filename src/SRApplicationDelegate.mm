@@ -23,44 +23,6 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
 }
 
 
-void AlertRestoreSettings(RestoreSettingsItem *item) {
-	NSAlert *alert = [[NSAlert alloc] init];
-	[alert addButtonWithTitle:@"OK"];
-	[alert addButtonWithTitle:@"Cancel"];
-	[alert setMessageText:[NSString stringWithFormat: @"Restore all settings for %@?",
-						   [item.displayName stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]]]];
-
-	[alert setInformativeText:@"Reboot is required to apply changes. For safety, settings under /System would not be removed if no backup file was found. Use Edit... menu to manually reset those settings anyway."];
-	[alert setAlertStyle:NSWarningAlertStyle];
-
-	NSArray *buttons = [alert buttons];
-	[[buttons objectAtIndex:0] setKeyEquivalent:@"\r"];	  // Return key
-	[[buttons objectAtIndex:1] setKeyEquivalent:@"\033"]; // Esc key
-
-	[NSApp activateIgnoringOtherApps:YES];
-	NSPanel* panel = static_cast<NSPanel*>([alert window]);
-	panel.floatingPanel = YES;
-
-	if ([alert runModal] == NSAlertFirstButtonReturn) {
-		if ([item restoreSettings]) {
-			NSAlert *finishAlert = [[NSAlert alloc] init];
-			[finishAlert addButtonWithTitle:@"OK"];
-			[finishAlert setMessageText:[NSString stringWithFormat: @"Restore was successfull!"]];
-			[finishAlert setAlertStyle:NSInformationalAlertStyle];
-
-			NSArray *finishButtons = [finishAlert buttons];
-			[[finishButtons objectAtIndex:0] setKeyEquivalent:@"\r"];	  // Return key
-
-			[NSApp activateIgnoringOtherApps:YES];
-			NSPanel* finPanel = static_cast<NSPanel*>([finishAlert window]);
-			finPanel.floatingPanel = YES;
-
-			[finishAlert runModal];
-		}
-	}
-}
-
-
 @implementation SRApplicationDelegate
 
 - (void) showAbout
@@ -273,7 +235,42 @@ void AlertRestoreSettings(RestoreSettingsItem *item) {
 
 
 - (void) restoreSettings: (RestoreSettingsItem *)sender {
-	AlertRestoreSettings(sender);
+	NSAlert* prompt = [[NSAlert alloc] init];
+	[prompt addButtonWithTitle:@"OK"];
+	[prompt addButtonWithTitle:@"Cancel"];
+	[prompt setMessageText:[NSString stringWithFormat: @"Restore all settings for %@?",
+							[sender.displayName stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]]]];
+
+	[prompt setInformativeText:@"Reboot is required to apply changes. For safety, settings under /System would not be removed if no backup file was found. Use Edit... menu to manually reset those settings anyway."];
+	[prompt setAlertStyle:NSWarningAlertStyle];
+
+	NSArray* buttons = [prompt buttons];
+	[[buttons objectAtIndex:0] setKeyEquivalent:@"\r"];	  // Return key
+	[[buttons objectAtIndex:1] setKeyEquivalent:@"\033"]; // Esc key
+
+	[NSApp activateIgnoringOtherApps:YES];
+	[[prompt window] setLevel:NSFloatingWindowLevel];
+
+	if ([prompt runModal] == NSAlertFirstButtonReturn) {
+		NSAlert* alert;
+		NSDictionary* error;
+
+		if ((error = [sender restoreSettings]) != nil) {
+			alert = [[NSAlert alloc] initFromDict:error style:NSAlertStyleCritical];
+		} else {
+			alert = [[NSAlert alloc] init];
+			[alert addButtonWithTitle:@"OK"];
+			[alert setMessageText:[NSString stringWithFormat: @"Restore success!"]];
+			[alert setAlertStyle:NSInformationalAlertStyle];
+
+			[[[alert buttons] objectAtIndex:0] setKeyEquivalent:@"\r"];
+		}
+
+		[NSApp activateIgnoringOtherApps:YES];
+		[[alert window] setLevel:NSFloatingWindowLevel];
+
+		[alert runModal];
+	}
 }
 
 
@@ -285,6 +282,7 @@ CGError multiConfigureDisplays(CGDisplayConfigRef configRef, CGDirectDisplayID *
 			error = error ? error : CGConfigureDisplayMirrorOfDisplay(configRef, displays[i], master);
 	return error;
 }
+
 
 - (void) toggleMirroring: (NSMenuItem *)sender {
 	CGDisplayCount numberOfOnlineDspys;

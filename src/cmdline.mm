@@ -10,7 +10,6 @@ extern "C"
 #import <dlfcn.h>
 
 #import "utils.h"
-//#import "RDM-Swift.h"
 
 void usage()
 {

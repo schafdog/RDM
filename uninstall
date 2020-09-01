@@ -24,9 +24,9 @@ osascript -e 'quit app "RDM"' \
 && echo "
 Uninstall finished!
 
-The user added preferences are not removed, so you should
-remove manually. The backup files are located in
-${HOME}/Library/Application Support/net.alkalay.RDM/Backups
+Your preferences are NOT removed. The system-wide settings backup
+are located in:
+    ${HOME}/Library/Application Support/net.alkalay.RDM/Backups
 for just in case. If you don't see the folder, no worries!
-Backups made when needed, that is, not always.
+Backups made only when needed, that is, not always.
 "

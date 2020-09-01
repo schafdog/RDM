@@ -31,40 +31,65 @@ func isSIPActive() -> Bool {
 		})
 }
 
-func execAppleScript(_ script: String, withAdminPriv: Bool = false) -> NSDictionary? {
-	var scr = script.trimmingCharacters(in: .whitespaces)
+extension NSAppleScript {
+	private static let adminSuffix = " with administrator privileges"
 
-	let adminSuffix = " with administrator privileges"
-	if withAdminPriv && (!scr.hasSuffix(adminSuffix)) {
-		scr += adminSuffix
+	enum ScriptType {
+		case apple
+		case shell
+
+		public var prefix: String {
+			switch self {
+			case .shell:
+				return "do shell script \""
+			default:
+				return ""
+			}
+		}
+
+		public var suffix: String {
+			switch self {
+			case .shell:
+				return "\""
+			default:
+				return ""
+			}
+		}
 	}
 
-	if let scriptObject = NSAppleScript(source: scr) {
-		var error: NSDictionary?
-		scriptObject.executeAndReturnError(&error)
+	convenience init?(source: String, asType: ScriptType = .shell, withAdminPriv: Bool = false) {
+		var scr = asType.prefix + source.trimmingCharacters(in: .whitespaces) + asType.suffix
+		if withAdminPriv && !scr.hasSuffix(NSAppleScript.adminSuffix) {
+			scr += NSAppleScript.adminSuffix
+		}
+		self.init(source: scr)
+	}
+
+	static func executeAndReturnError(source: String, asType: ScriptType = .shell, withAdminPriv: Bool = false) -> NSDictionary? {
+		var error: NSDictionary? = nil
+		if let script = NSAppleScript(source: source, asType: asType, withAdminPriv: withAdminPriv) {
+			script.executeAndReturnError(&error)
+		} else {
+			error = NSDictionary()
+		}
 		return error
 	}
-
-	return NSDictionary()
 }
 
-// For convenience
-func execShellScript(_ script: String, withAdminPriv: Bool = false) -> NSDictionary? {
-	return execAppleScript("do shell script \"\(script)\"", withAdminPriv: withAdminPriv)
-}
+public extension NSAlert {
+	@objc convenience init(fromDict: NSDictionary, style: Style = .critical) {
+		self.init()
 
-func constructAlert(_ errDict: NSDictionary, style: NSAlert.Style = .critical) -> NSAlert {
-	let alert = NSAlert()
-	alert.alertStyle = style
+		self.window.level = .floating
+		self.alertStyle = style
 
-	if let reason = errDict.object(forKey: "NSAppleScriptErrorBriefMessage") {
-		alert.messageText = reason as! String
-	} else {
-		alert.messageText = "Unknown error, please try again."
-		print(errDict)
+		if let reason = fromDict.object(forKey: "NSAppleScriptErrorBriefMessage") {
+			self.messageText = reason as! String
+		} else {
+			self.messageText = "Unknown error, please try again."
+			print(fromDict)
+		}
 	}
-
-	return alert
 }
 
 extension Array {

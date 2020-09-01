@@ -78,13 +78,8 @@ import Foundation
 	}
 
 	convenience init(nsdata : NSData?) {
-		if nsdata != nil {
-			let d = swapUInt32Data(data: nsdata! as Data)
-			let count = d.count / MemoryLayout<UInt32>.size
-
-			var array = [UInt32](repeating: 0, count: count)
-			(d as NSData).getBytes(&array, length: d.count)
-
+		if let nsdata = nsdata {
+			let array = nsdata.getArrayOfSwappedBytes(asType: UInt32.self)
 			self.init(width:  array[0],
 					  height: array[1],
 					  hiDPI:  array.count > 2 && array[2...].allSatisfy { $0 != 0 },

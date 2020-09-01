@@ -59,7 +59,7 @@ import Cocoa
 	override func viewWillAppear() {
 		super.viewWillAppear()
 
-		plists = fileNames.map { NSMutableDictionary.init(contentsOf: URL.init(fileURLWithPath: $0)) ?? NSMutableDictionary() }
+		plists = fileNames.map { NSMutableDictionary(contentsOf: URL(fileURLWithPath: $0)) ?? NSMutableDictionary() }
 
 		if let a = plists[0][kDisplayProductName] as? String {
 			displayProductName = a
@@ -130,8 +130,8 @@ import Cocoa
 		var saveScripts = [String]()
 
 		if ViewController.rootWriteable {
-			if let errDict = RestoreSettingsItem.backupSettings(originalPlistPath: fileNames.last!) {
-				constructAlert(errDict).beginSheetModal(for: view.window!)
+			if let error = RestoreSettingsItem.backupSettings(originalPlistPath: fileNames.last!) {
+				NSAlert(fromDict: error).beginSheetModal(for: view.window!)
 				return
 			}
 		}
@@ -148,9 +148,10 @@ import Cocoa
 			saveScripts.append("rm '\(tmpFile)'")
 		}
 
-		if let errDict = execShellScript(saveScripts.joined(separator: " && "),
-										 withAdminPriv: true) {
-			constructAlert(errDict).beginSheetModal(for: view.window!)
+		if let error = NSAppleScript.executeAndReturnError(source: saveScripts.joined(separator: " && "),
+														   asType: .shell,
+														   withAdminPriv: true) {
+			NSAlert(fromDict: error).beginSheetModal(for: view.window!)
 		} else {
 			view.window!.close()
 		}

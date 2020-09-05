@@ -9,19 +9,19 @@
 import Cocoa
 
 @objc class EditDisplayPlistItem : NSMenuItem {
-	@objc var vendorID	  : UInt32
-	@objc var productID	  : UInt32
-	@objc var displayName : String
-	
-	@objc init(title : String, action : Selector, vendorID : UInt32, productID : UInt32, displayName : String) {
-		self.vendorID	 = vendorID
-		self.productID	 = productID
-		self.displayName = displayName
+    @objc var vendorID    : UInt32
+    @objc var productID   : UInt32
+    @objc var displayName : String
 
-		super.init(title: title, action: action, keyEquivalent: "")
-	}
-	
-	required init(coder decoder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
+    @objc init(title : String, action : Selector, vendorID : UInt32, productID : UInt32, displayName : String) {
+        self.vendorID    = vendorID
+        self.productID   = productID
+        self.displayName = displayName
+
+        super.init(title: title, action: action, keyEquivalent: "")
+    }
+
+    required init(coder decoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }

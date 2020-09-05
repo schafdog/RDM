@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		35554437212C7CB00063AEE7 /* EditDisplayPlistItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35554436212C7CB00063AEE7 /* EditDisplayPlistItem.swift */; };
-		358D565C212DEDED00F9E9BF /* SRApplicationDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 358D5653212DEDEC00F9E9BF /* SRApplicationDelegate.mm */; };
+		358D565C212DEDED00F9E9BF /* RDMAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 358D5653212DEDEC00F9E9BF /* RDMAppDelegate.mm */; };
 		358D565D212DEDED00F9E9BF /* cmdline.mm in Sources */ = {isa = PBXBuildFile; fileRef = 358D5654212DEDEC00F9E9BF /* cmdline.mm */; };
 		358D565E212DEDED00F9E9BF /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 358D5655212DEDEC00F9E9BF /* main.mm */; };
 		358D565F212DEDED00F9E9BF /* utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 358D5658212DEDEC00F9E9BF /* utils.mm */; };
@@ -28,14 +28,14 @@
 /* Begin PBXFileReference section */
 		35554436212C7CB00063AEE7 /* EditDisplayPlistItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDisplayPlistItem.swift; sourceTree = "<group>"; };
 		358D5652212DEDEB00F9E9BF /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
-		358D5653212DEDEC00F9E9BF /* SRApplicationDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SRApplicationDelegate.mm; sourceTree = "<group>"; };
+		358D5653212DEDEC00F9E9BF /* RDMAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RDMAppDelegate.mm; sourceTree = "<group>"; };
 		358D5654212DEDEC00F9E9BF /* cmdline.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = cmdline.mm; sourceTree = "<group>"; };
 		358D5655212DEDEC00F9E9BF /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		358D5656212DEDEC00F9E9BF /* cmdline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cmdline.h; sourceTree = "<group>"; };
 		358D5657212DEDEC00F9E9BF /* ResMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResMenuItem.h; sourceTree = "<group>"; };
 		358D5658212DEDEC00F9E9BF /* utils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = utils.mm; sourceTree = "<group>"; };
 		358D5659212DEDEC00F9E9BF /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		358D565A212DEDED00F9E9BF /* SRApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRApplicationDelegate.h; sourceTree = "<group>"; };
+		358D565A212DEDED00F9E9BF /* RDMAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDMAppDelegate.h; sourceTree = "<group>"; };
 		358D565B212DEDED00F9E9BF /* ResMenuItem.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ResMenuItem.mm; sourceTree = "<group>"; };
 		358F04E2212D7E6500671ABD /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		35C9D3AB212C04DA00D652F7 /* RDM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RDM.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -76,6 +76,7 @@
 				35E3DC1521281E3E00B4D66A /* Frameworks */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 0;
 		};
 		350B4EEE1FB05B2E0001A095 /* Products */ = {
 			isa = PBXGroup;
@@ -100,18 +101,18 @@
 				358D5656212DEDEC00F9E9BF /* cmdline.h */,
 				358D5654212DEDEC00F9E9BF /* cmdline.mm */,
 				358D5655212DEDEC00F9E9BF /* main.mm */,
+				358D565A212DEDED00F9E9BF /* RDMAppDelegate.h */,
+				358D5653212DEDEC00F9E9BF /* RDMAppDelegate.mm */,
 				358D5657212DEDEC00F9E9BF /* ResMenuItem.h */,
 				358D565B212DEDED00F9E9BF /* ResMenuItem.mm */,
-				358D565A212DEDED00F9E9BF /* SRApplicationDelegate.h */,
-				358D5653212DEDEC00F9E9BF /* SRApplicationDelegate.mm */,
 				358D5652212DEDEB00F9E9BF /* utils.h */,
 				358D5658212DEDEC00F9E9BF /* utils.mm */,
 				35C9D3AF212C04DA00D652F7 /* ViewController.swift */,
-				8FC72A1A24F664BA004E10E1 /* CharEncDec.swift */,
 				8FC72A1924F664BA004E10E1 /* Resolution.swift */,
-				8FC72A1B24F664BA004E10E1 /* Utils.swift */,
 				35554436212C7CB00063AEE7 /* EditDisplayPlistItem.swift */,
 				8F48E61624FC761C0073123B /* RestoreSettings.swift */,
+				8FC72A1A24F664BA004E10E1 /* CharEncDec.swift */,
+				8FC72A1B24F664BA004E10E1 /* Utils.swift */,
 				35CC4996212C54AF00704BD7 /* bridging.h */,
 			);
 			path = src;
@@ -205,7 +206,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				358D565C212DEDED00F9E9BF /* SRApplicationDelegate.mm in Sources */,
+				358D565C212DEDED00F9E9BF /* RDMAppDelegate.mm in Sources */,
 				358D5661212DEDED00F9E9BF /* ResMenuItem.mm in Sources */,
 				358D565F212DEDED00F9E9BF /* utils.mm in Sources */,
 				35554437212C7CB00063AEE7 /* EditDisplayPlistItem.swift in Sources */,

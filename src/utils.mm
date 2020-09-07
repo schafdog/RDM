@@ -60,7 +60,7 @@ io_service_t IOServicePortFromCGDisplayID(CGDirectDisplayID displayID)
         productIDRef = static_cast<CFNumberRef>(CFDictionaryGetValue(info,
                                                                      CFSTR(kDisplayProductID)));
         
-        if (!vendorIDRef || !productIDRef) {
+        if (vendorIDRef == nullptr || productIDRef == nullptr) {
             CFRelease(info);
             continue;
         }

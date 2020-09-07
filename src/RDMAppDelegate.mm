@@ -134,9 +134,11 @@ void DisplayReconfigurationCallback(CGDirectDisplayID cg_id,
             NSDictionary *deviceInfo = (__bridge NSDictionary *)IODisplayCreateInfoDictionary(IOServicePortFromCGDisplayID(display),
                                                                                               kIODisplayOnlyPreferredName);
             NSDictionary *localizedNames = [deviceInfo objectForKey:[NSString stringWithUTF8String:kDisplayProductName]];
+            CFRelease((CFDictionaryRef) deviceInfo); // Free memory
 
             if ([localizedNames count] > 0)
                 screenName = [localizedNames objectForKey:[[localizedNames allKeys] objectAtIndex:0]];
+
 
             [submenu addItem:[NSMenuItem separatorItem]];
 
@@ -330,14 +332,18 @@ CGError multiConfigureDisplays(CGDisplayConfigRef configRef, CGDirectDisplayID *
 - (void) applicationDidFinishLaunching: (NSNotification*) notification
 {
     // NSLog(@"Finished launching");
+    [self refreshStatusMenu];
+    CGDisplayRegisterReconfigurationCallback(DisplayReconfigurationCallback, (void*)self);
+
+    // For empty box remained
+    [IntegerValueTransformer registerTransformer];
+
     statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength: NSSquareStatusItemLength];
+    [statusItem setMenu: statusMenu];
 
     NSImage* statusImage = [NSImage imageNamed: @"StatusIcon"];
     statusItem.button.image = statusImage;
     [statusItem.button.image setTemplate:YES];
-
-    [self refreshStatusMenu];
-    CGDisplayRegisterReconfigurationCallback(DisplayReconfigurationCallback, (void*)self);
 }
 
 @end

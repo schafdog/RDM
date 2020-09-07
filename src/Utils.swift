@@ -112,3 +112,39 @@ extension Array {
         removeSubrange(i...)
     }
 }
+
+func gcdForResolution<T:BinaryInteger>(_ a: T, _ b: T, _ checkConvention: Bool = true) -> T {
+    if a == 0 {
+        return b
+    } else if b == 0 {
+        return a
+    }
+
+    // Resolution-specific
+    if checkConvention {
+        if a % 16 == 0 && a * 5 == b * 8 {
+            return gcdForResolution(a / 16, b / 10, false)
+        } else if a % 21 == 0 && a * 3 == b * 7 {
+            return gcdForResolution(a / 21, b / 9, false)
+        }
+    }
+
+    let r = a % b
+    if r != 0 {
+        return gcdForResolution(b, r, checkConvention)
+    } else {
+        return b
+    }
+}
+
+extension Array where Element: BinaryInteger {
+    mutating func simplify() {
+        let gcd = self[1...].reduce(self[0]) { gcdForResolution($0, $1) }
+
+        guard gcd != 0 && gcd != 1 && gcd != -1 else { return }
+
+        for i in 0..<self.count {
+            self[i] /= gcd
+        }
+    }
+}

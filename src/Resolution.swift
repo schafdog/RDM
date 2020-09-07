@@ -14,7 +14,7 @@ import Foundation
     private var _hiDPI     : Bool
     private var _hiDPIFlag : [UInt32]
 
-    static private let _defaultHiDPIFlag : [UInt32] = [0x1, 0x200000]
+    private static let _defaultHiDPIFlag : [UInt32] = [0x1, 0x200000]
 
     // For NSObject properties
 
@@ -69,7 +69,7 @@ import Foundation
 
     private init(width : UInt32, height : UInt32, hiDPI : Bool, origin : [UInt32]) {
         self._width     = width
-        self._height     = height
+        self._height    = height
         self._hiDPI     = hiDPI
         self._hiDPIFlag = hiDPI && (origin.count > 2)
             ? Array(origin[2...]) : Resolution._defaultHiDPIFlag // For hiDPI toggle feature

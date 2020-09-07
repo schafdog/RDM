@@ -20,12 +20,16 @@ import Cocoa
     static let fileformat    = "DisplayProductID-%x"
 
     @IBOutlet var arrayController : NSArrayController!
-              var plists        : [NSMutableDictionary] = []
+              var calcController  : SheetViewController!
+              var plists          : [NSMutableDictionary] = []
 
     @IBOutlet weak var displayName : NSTextField!
     @objc          var vendorID    : UInt32         = 0
     @objc          var productID   : UInt32         = 0
                    var resolutions : [[Resolution]] = []
+
+    // For help
+    var helpPopover     : NSPopover!
 
     @objc var displayProductName : String {
         get {
@@ -82,6 +86,13 @@ import Cocoa
             }
         }
 
+        // Initialize subviews
+        calcController = (storyboard!.instantiateController(withIdentifier: "calculator") as! SheetViewController)
+
+        helpPopover = NSPopover()
+        helpPopover.contentViewController = (storyboard!.instantiateController(withIdentifier: "helpMessage") as! NSViewController)
+        helpPopover.behavior = .semitransient
+
         // For better UI
         view.window!.standardWindowButton(.miniaturizeButton)!.isHidden = true
         view.window!.standardWindowButton(.zoomButton)!.isHidden = true
@@ -97,13 +108,14 @@ import Cocoa
         view.window?.level = .floating // Always on top
     }
 
-    @IBAction func add(_ sender: Any) {
+    @IBAction
+    func add(_ sender: Any) {
         resolutions[0].append(Resolution())
         arrayController.content = resolutions[0]
         arrayController.rearrangeObjects()
     }
 
-    @IBOutlet weak var removeButton: NSButton!
+//    @IBOutlet weak var removeButton: NSButton!
 
     @IBAction func remove(_ sender: Any) {
         if arrayController.selectionIndexes.count > 0 {
@@ -152,6 +164,20 @@ import Cocoa
             NSAlert(fromDict: error).beginSheetModal(for: view.window!)
         } else {
             view.window!.close()
+        }
+    }
+
+    @IBAction func calcAspectRatio(_ sender: Any) {
+        presentAsSheet(calcController)
+    }
+
+    @IBAction func displayHelpmessage(_ sender: Any) {
+        guard let sender = sender as? NSButton else { return }
+
+        if helpPopover.isShown {
+            helpPopover.close()
+        } else {
+            helpPopover.show(relativeTo: sender.bounds, of: sender, preferredEdge: .minY)
         }
     }
 

@@ -108,8 +108,7 @@ import Cocoa
         view.window?.level = .floating // Always on top
     }
 
-    @IBAction
-    func add(_ sender: Any) {
+    @IBAction func add(_ sender: Any) {
         resolutions[0].append(Resolution())
         arrayController.content = resolutions[0]
         arrayController.rearrangeObjects()

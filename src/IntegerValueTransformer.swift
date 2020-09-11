@@ -12,7 +12,7 @@ import Foundation
     private static let name = NSValueTransformerName(rawValue: IntegerValueTransformer.className())
 
     @objc public static func registerTransformer() {
-        print(name)
+//        print(name)
         ValueTransformer.setValueTransformer(IntegerValueTransformer(),
                                              forName: name)
     }

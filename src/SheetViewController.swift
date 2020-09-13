@@ -43,6 +43,9 @@ import Cocoa
         }
         set {
             _aspectRatio[0] = newValue
+            if height != 0 {
+                width = height / heightRatio * newValue
+            }
         }
     }
 
@@ -107,7 +110,7 @@ import Cocoa
         case "width", "height":
             _refreshRatio()
         case "widthRatio":
-            return
+            widthField .integerValue = Int(width)
         case "heightRatio":
             heightField.integerValue = Int(height)
         default:

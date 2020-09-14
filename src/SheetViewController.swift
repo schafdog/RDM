@@ -131,10 +131,4 @@ import Cocoa
         self._resolution  = Resolution()
         self._aspectRatio = [0, 0]
     }
-
-    // For closing when esc key is pressed
-    override func cancelOperation(_ sender: Any?) {
-        dismiss(self)
-    }
-
 }

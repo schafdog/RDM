@@ -29,6 +29,7 @@ if [[ $? = 0 ]]; then
     open "${RDM_PATH}/RDM.app"
     echo "Build finished!"
 else
+    rm -rf "$__tempdir" &>/dev/null
     echo "
 An error occured; try again
 ${__ERR_LOG}"

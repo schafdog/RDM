@@ -14,9 +14,7 @@ import Cocoa
     @objc var displayName : String
           var filePath    : String
 
-    private static let backupDir =
-        URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent(
-            "Library/Application Support/\(Bundle.main.bundleIdentifier!)/Backups").path
+    private static let backupDir = getAppSupportDir(withTrailingPath: "\(Bundle.main.bundleIdentifier!)/Backups")
 
     @objc init(title : String, action : Selector, vendorID : UInt32, productID : UInt32, displayName : String) {
         self.vendorID    = vendorID // 1552
@@ -35,14 +33,15 @@ import Cocoa
         let plistSpecificPath = URL(fileURLWithPath: originalPlistPath).pathComponents.suffix(2)
 
         var backupScripts     = [String]()
-        let backupDir         = "\(RestoreSettingsItem.backupDir)/\(plistSpecificPath.first!)"
+        let currBackupDir     = RestoreSettingsItem.backupDir.appendingPathComponent(plistSpecificPath.first!).standardizedFileURL
+        let backupPlistFile   = currBackupDir.appendingPathComponent(plistSpecificPath.last!).standardizedFileURL.path
 
-        if FileManager.default.fileExists(atPath: backupDir) {
+        if FileManager.default.fileExists(atPath: backupPlistFile) {
             return nil
         }
 
-        backupScripts.append("mkdir -p '\(backupDir)'")
-        backupScripts.append("cp '\(originalPlistPath)' '\(backupDir)/\(plistSpecificPath.last!)'")
+        backupScripts.append("mkdir -p '\(currBackupDir.path)'")
+        backupScripts.append("cp '\(originalPlistPath)' '\(backupPlistFile)'")
 
         return NSAppleScript.executeAndReturnError(source: backupScripts.joined(separator: " && "), asType: .shell)
     }
@@ -116,7 +115,8 @@ import Cocoa
 
             if FileManager.default.fileExists(atPath: fullPath) {
                 if dir.hasPrefix("/System") {
-                    restoreScripts.append("mv -f '\(RestoreSettingsItem.backupDir)/\(filePath)' '\(fullPath)'")
+                    restoreScripts.append(
+                        "cp -f '\(RestoreSettingsItem.backupDir.appendingPathComponent(filePath).standardizedFileURL.path)' '\(fullPath)'")
                 } else {
                     restoreScripts.append("rm -f '\(fullPath)'")
                 }

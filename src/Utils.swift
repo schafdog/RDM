@@ -31,6 +31,16 @@ func isSIPActive() -> Bool {
         })
 }
 
+func getAppSupportDir(withTrailingPath suffix: String = "") -> URL {
+    if let appSupportDir = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first {
+        return URL(fileURLWithPath: appSupportDir).appendingPathComponent(suffix).standardizedFileURL
+    } else {
+        return URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent("Library/Application Support") // Default
+                                                      .appendingPathComponent(suffix)
+                                                      .standardizedFileURL
+    }
+}
+
 extension NSAppleScript {
     private static let adminSuffix = " with administrator privileges"
 

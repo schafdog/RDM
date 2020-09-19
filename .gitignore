@@ -2,6 +2,7 @@
 *.o
 *.app
 *.xcuserdatad
+*.playground
 xcuserdata
 Build
 Index

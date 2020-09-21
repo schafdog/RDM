@@ -36,7 +36,8 @@ import Cocoa
         let currBackupDir     = RestoreSettingsItem.backupDir.appendingPathComponent(plistSpecificPath.first!).standardizedFileURL
         let backupPlistFile   = currBackupDir.appendingPathComponent(plistSpecificPath.last!).standardizedFileURL.path
 
-        if FileManager.default.fileExists(atPath: backupPlistFile) {
+        if FileManager.default.fileExists(atPath: backupPlistFile)
+            || (!FileManager.default.fileExists(atPath: originalPlistPath)) {
             return nil
         }
 
